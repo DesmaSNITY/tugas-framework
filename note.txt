@@ -1,0 +1,56 @@
+
+Users
+-----
+id
+role
+email
+password
+name
+phone
+fname
+lname
+
+        1
+        |
+        N
+  Transactions(fk done)
+  ------------
+  transaction_id
+  donasi_id FK
+  user_id FK
+  nominal
+  message
+  payment_method
+  status
+
+          N
+          |
+          1
+  OpenDonasi(fk done)
+  ----------
+  donasi_id
+  yayasan_id FK
+  title
+  description
+  deadline
+
+          1
+          |
+          N
+  Expenses(fk done)
+  --------
+  expense_id
+  donasi_id FK
+  amount
+  beneficiary
+  status
+
+        N
+        |
+        1
+Yayasan(no fk)
+--------
+yayasan_id
+name
+location
+status
