@@ -12,7 +12,7 @@ lname
 
         1
         |
-        N
+        Nas
   Transactions(fk done)
   ------------
   transaction_id
