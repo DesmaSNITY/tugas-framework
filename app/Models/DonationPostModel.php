@@ -14,6 +14,7 @@ class DonationPostModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'fondation_id',
+        'picture',
         'title',
         'description',
         'deadline',

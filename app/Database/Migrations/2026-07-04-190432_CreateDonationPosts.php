@@ -15,6 +15,11 @@ class CreateDonationPosts extends Migration
                 'unsigned'=>true,
                 'auto_increment'=>true
             ],
+            'picture' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => true,
+            ],
             'foundation_id'=>[
                 'type'=>'BIGINT',
                 'constraint'=>20,
@@ -42,15 +47,11 @@ class CreateDonationPosts extends Migration
                 'default'    => 0,
             ],
             'status' => [
-               'type' => 'ENUM',
-               'constraint' => [
-                   'draft',
-                   'active',
-                   'completed',
-                   'cancelled',
-               ],
-               'default' => 'draft',
+                'type' => 'VARCHAR',
+                'constraint' => 20,
+                'default' => 'pending',
             ],
+            //'draft','active','completed','cancelled',
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

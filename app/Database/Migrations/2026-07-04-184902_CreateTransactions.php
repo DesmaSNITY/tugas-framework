@@ -40,17 +40,11 @@ class CreateTransactions extends Migration
                 'constraint'=>50
             ],
             'status'=>[
-                'type' => 'ENUM',
-                'constraint' => [
-                    'pending',
-                    'paid',
-                    'failed',
-                    'expired',
-                    'cancelled',
-                    'refunded'
-                ],
+                'type' => 'VARCHAR',
+                'constraint' => 20,
                 'default' => 'pending',
             ],
+            //        'pending','paid','failed','expired','cancelled'
             'created_at'=>[
                 'type'=>'DATETIME',
                 'null'=>true

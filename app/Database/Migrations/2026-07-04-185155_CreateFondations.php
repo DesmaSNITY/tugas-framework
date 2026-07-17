@@ -25,13 +25,11 @@ class CreateFondations extends Migration
                 'constraint'=>'255'
             ],
             'status' =>[
-                'type'=>'ENUM',
-                'constraint'=>[
-                    'active',
-                    'inactive'
-                ],
+                'type' => 'VARCHAR',
+                'constraint' => 20,
                 'default'=>'active',
             ],
+            // active, inactive
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

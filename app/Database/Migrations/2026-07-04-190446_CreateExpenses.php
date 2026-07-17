@@ -30,22 +30,17 @@ class CreateExpenses extends Migration
                 'unsigned'   => true,
             ],
             // use benificiary or use fondation 
-            // 'beneficiary' => [
-            //     'type'       => 'VARCHAR',
-            //     'constraint' => 255,
-            // ],
+             'beneficiary' => [
+                 'type'       => 'VARCHAR',
+                 'constraint' => 255,
+             ],
 
             'status' => [
-                'type' => 'ENUM',
-                'constraint' => [
-                    'pending',
-                    'approved',
-                    'paid',
-                    'rejected',
-                ],
+                'type' => 'VARCHAR',
+                'constraint' => 20,        
                 'default' => 'pending',
             ],
-
+            //'pending','approved','paid','rejected',
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

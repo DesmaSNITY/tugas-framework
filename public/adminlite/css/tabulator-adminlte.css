@@ -1,0 +1,30 @@
+/* Match AdminLTE card */
+.tabulator {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: .875rem;
+}
+
+/* Match card header */
+.tabulator-header {
+    background: var(--bs-secondary-bg);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+/* Match Bootstrap table cells */
+.tabulator-col,
+.tabulator-cell {
+    border-color: var(--bs-border-color) !important;
+}
+
+/* Match Bootstrap hover */
+.tabulator-row:hover {
+    background: rgba(var(--bs-primary-rgb), .08);
+}
+
+/* Match Bootstrap pagination */
+.tabulator-footer {
+    background: transparent;
+    border-top: 1px solid var(--bs-border-color);
+}
