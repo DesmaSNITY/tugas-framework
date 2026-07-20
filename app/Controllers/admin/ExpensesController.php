@@ -26,12 +26,12 @@ class ExpensesController extends BaseController
 
     public function create()
     {
-        return view('admin/expenses/create');
+        return view('admin/addexpense');
     }
 
     public function store()
     {
-        $data = $this->request->getJSON(true) ?? $this->request->getPost();
+        $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
 
         if (! $this->model->validate($data)) {
             return $this->response->setStatusCode(422)->setJSON(['errors' => $this->model->errors()]);

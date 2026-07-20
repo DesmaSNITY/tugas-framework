@@ -38,7 +38,7 @@
         <h3 class="card-title">Create Foundation</h3>
       </div>
 
-      <form action="<?= site_url('admin/foundations/store') ?>" method="post">
+      <form action="<?= site_url('admin/foundations') ?>" method="post">
         <?= csrf_field() ?>
 
         <div class="card-body">

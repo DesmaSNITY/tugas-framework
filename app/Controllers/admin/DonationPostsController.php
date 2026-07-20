@@ -26,12 +26,12 @@ class DonationPostsController extends BaseController
 
     public function create()
     {
-        return view('admin/donationposts/create');
+        return view('admin/adddonationpost');
     }
 
     public function store()
     {
-        $data = $this->request->getJSON(true) ?? $this->request->getPost();
+        $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
 
         if (! $this->model->validate($data)) {
             return $this->response->setStatusCode(422)->setJSON([
@@ -58,7 +58,7 @@ class DonationPostsController extends BaseController
 
     public function update($id)
     {
-        $data = $this->request->getJSON(true) ?? $this->request->getPost();
+        $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
 
         if (! $this->model->find($id)) {
             return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);

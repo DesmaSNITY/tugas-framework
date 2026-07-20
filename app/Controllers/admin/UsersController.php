@@ -29,9 +29,14 @@ class UsersController extends BaseController
         return $this->response->setJSON($users);
     }
 
+    public function create()
+    {
+        return view('admin/addadmin.php');
+    }
+
     public function store()
     {
-        $data = $this->request->getJSON(true) ?? $this->request->getPost();
+        $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
 
         if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
             return $this->response->setStatusCode(422)->setJSON(['error' => 'Missing required fields']);
@@ -95,7 +100,7 @@ class UsersController extends BaseController
 
     public function update($id)
     {
-        $data = $this->request->getJSON(true) ?? $this->request->getPost();
+        $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
 
         $this->model->update($id, [
             'first_name' => $data['first_name'] ?? null,
