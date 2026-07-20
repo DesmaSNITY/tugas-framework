@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <!-- In <head> -->
+  <title>Expenses</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" />
@@ -45,85 +44,84 @@
       color: var(--bs-body-color) !important;
     }
 
-.status-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: capitalize;
-  border: none;
-  border-radius: 999px;
-  padding: 4px 28px 4px 12px;
-  width: auto;
-  min-width: 100px;
-  cursor: pointer;
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 10px 10px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8.5 1.5 4h9z'/%3E%3C/svg%3E");
-  transition: filter 0.15s ease;
-}
+    .status-select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: capitalize;
+      border: none;
+      border-radius: 999px;
+      padding: 4px 28px 4px 12px;
+      width: auto;
+      min-width: 100px;
+      cursor: pointer;
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 10px 10px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8.5 1.5 4h9z'/%3E%3C/svg%3E");
+      transition: filter 0.15s ease;
+    }
 
-.status-select:hover {
-  filter: brightness(0.95);
-}
+    .status-select:hover {
+      filter: brightness(0.95);
+    }
 
-.status-select:focus {
-  outline: 2px solid var(--bs-primary);
-  outline-offset: 1px;
-}
+    .status-select:focus {
+      outline: 2px solid var(--bs-primary);
+      outline-offset: 1px;
+    }
 
-.status-select:disabled {
-  cursor: default;
-  opacity: 0.7;
-}
+    .status-select:disabled {
+      cursor: default;
+      opacity: 0.7;
+    }
 
-.status-pending {
-  background-color: #e2e3e5;
-  color: #41464b;
-}
+    .status-pending {
+      background-color: #e2e3e5;
+      color: #41464b;
+    }
 
-.status-approved {
-  background-color: #cfe2ff;
-  color: #084298;
-}
+    .status-approved {
+      background-color: #cfe2ff;
+      color: #084298;
+    }
 
-.status-paid {
-  background-color: #d1e7dd;
-  color: #0f5132;
-}
+    .status-paid {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
 
-.status-rejected {
-  background-color: #f8d7da;
-  color: #842029;
-}
+    .status-rejected {
+      background-color: #f8d7da;
+      color: #842029;
+    }
 
-/* Dark mode variants — muted/desaturated so they don't glare against a dark table */
-html[data-bs-theme="dark"] .status-pending {
-  background-color: #495057;
-  color: #e9ecef;
-}
+    html[data-bs-theme="dark"] .status-pending {
+      background-color: #495057;
+      color: #e9ecef;
+    }
 
-html[data-bs-theme="dark"] .status-approved {
-  background-color: #1b4173;
-  color: #cfe2ff;
-}
+    html[data-bs-theme="dark"] .status-approved {
+      background-color: #1b4173;
+      color: #cfe2ff;
+    }
 
-html[data-bs-theme="dark"] .status-paid {
-  background-color: #1e4633;
-  color: #d1e7dd;
-}
+    html[data-bs-theme="dark"] .status-paid {
+      background-color: #1e4633;
+      color: #d1e7dd;
+    }
 
-html[data-bs-theme="dark"] .status-rejected {
-  background-color: #5c2328;
-  color: #f8d7da;
-}
+    html[data-bs-theme="dark"] .status-rejected {
+      background-color: #5c2328;
+      color: #f8d7da;
+    }
 
-html[data-bs-theme="dark"] .status-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23ccc' d='M6 8.5 1.5 4h9z'/%3E%3C/svg%3E");
-}
+    html[data-bs-theme="dark"] .status-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23ccc' d='M6 8.5 1.5 4h9z'/%3E%3C/svg%3E");
+    }
   </style>
 
 </head>
@@ -158,7 +156,7 @@ html[data-bs-theme="dark"] .status-select {
             <div class="col-sm-6">
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb float-sm-end">
-                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item"><a href="<?= base_url('admin') ?>">Home</a></li>
                   <li class="breadcrumb-item"><a href="#">Tables</a></li>
                   <li class="breadcrumb-item active" aria-current="page">Expenses</li>
                 </ol>
@@ -198,10 +196,10 @@ html[data-bs-theme="dark"] .status-select {
                     Print
                   </button>
                 </div>
-                <button id="add-expense" type="button" class="btn btn-sm btn-primary">
+                <a href="<?= base_url('admin/expenses/create') ?>" class="btn btn-sm btn-primary">
                   <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
                   Add Expense
-                </button>
+                </a>
               </div>
               <div id="expenses-table"></div>
             </div>
@@ -219,16 +217,16 @@ html[data-bs-theme="dark"] .status-select {
     <!--end::Footer-->
   </div>
   <!--end::App Wrapper-->
-  <!--begin::Script-->
-  <!--begin::Third Party Plugin(OverlayScrollbars)-->
-  <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
-  <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
 
-  <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
-  <!--end::Required Plugin(AdminLTE)-->
-  <!--begin::OverlayScrollbars Configure-->
-
-
+  <!-- Bootstrap (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- OverlayScrollbars -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
+  <!-- AdminLTE -->
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4/dist/js/adminlte.min.js"></script>
+  <!-- Tabulator -->
+  <script src="https://unpkg.com/tabulator-tables@6.3.0/dist/js/tabulator.min.js"></script>
 
   <script>
     const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
@@ -239,15 +237,8 @@ html[data-bs-theme="dark"] .status-select {
     };
     document.addEventListener('DOMContentLoaded', function () {
       const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
-
-      // Disable OverlayScrollbars on mobile devices to prevent touch interference
       const isMobile = window.innerWidth <= 992;
-
-      if (
-        sidebarWrapper &&
-        OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined &&
-        !isMobile
-      ) {
+      if (sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined && !isMobile) {
         OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
           scrollbars: {
             theme: Default.scrollbarTheme,
@@ -258,59 +249,11 @@ html[data-bs-theme="dark"] .status-select {
       }
     });
   </script>
-  <!--end::OverlayScrollbars Configure-->
 
-  <!--begin::Color Mode Toggle-->
-  <!-- The light/dark/auto switcher ships in adminlte.js as the ColorMode
-     module (since 4.1) — no page script needed. Only the no-flash snippet
-     in <head> stays inline, because it must run before first paint. -->
-  <!--end::Color Mode Toggle-->
-
-  <!-- OPTIONAL SCRIPTS -->
-
-  <!-- apexcharts -->
-
-  <!--end::Script-->
-  <!-- Before </body> -->
-
-  <!-- Bootstrap (includes Popper) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- OverlayScrollbars -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
-  <!-- AdminLTE -->
-  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4/dist/js/adminlte.min.js"></script>
-  <script src="https://unpkg.com/tabulator-tables@6.3.0/dist/js/tabulator.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-      var statusColors = {
-        pending: 'bg-secondary',
-        approved: 'bg-info',
-        paid: 'bg-success',
-        rejected: 'bg-danger',
-      };
-
-      // maps donationpost_id -> title, just for display in dummy mode
-      // (in real app, join this server-side and send donationpost_title in the JSON)
-      var donationPostTitles = {
-        1: "Bantu Korban Banjir Jakarta",
-        2: "Sekolah Gratis Anak Yatim",
-        3: "Renovasi Panti Jompo",
-        4: "Bantuan Medis Darurat",
-        5: "Beasiswa Mahasiswa Kurang Mampu",
-      };
-
-      // ===== DUMMY DATA (replace with ajaxURL later) =====
-      var dummyData = [
-        { id: 1, donationpost_id: 1, beneficiary: "PT Sumber Pangan", amount: 8000000, status: "paid", created_at: "2026-06-05 10:00:00", updated_at: "2026-06-10 09:00:00" },
-        { id: 2, donationpost_id: 1, beneficiary: "Apotek Sehat Jaya", amount: 3500000, status: "approved", created_at: "2026-06-12 11:15:00", updated_at: "2026-06-14 08:00:00" },
-        { id: 3, donationpost_id: 2, beneficiary: "CV Buku Cerdas", amount: 12000000, status: "paid", created_at: "2026-05-20 09:30:00", updated_at: "2026-05-25 10:00:00" },
-        { id: 4, donationpost_id: 3, beneficiary: "Toko Bangunan Jaya", amount: 4500000, status: "pending", created_at: "2026-07-06 13:00:00", updated_at: "2026-07-06 13:00:00" },
-        { id: 5, donationpost_id: 4, beneficiary: "RS Harapan Bunda", amount: 9500000, status: "rejected", created_at: "2026-06-22 14:00:00", updated_at: "2026-06-25 09:00:00" },
-        { id: 6, donationpost_id: 4, beneficiary: "Apotek Sehat Jaya", amount: 2500000, status: "pending", created_at: "2026-07-09 16:00:00", updated_at: "2026-07-09 16:00:00" },
-      ];
-      // =====================================================
+      var BASE_URL = "<?= base_url() ?>";
 
       var nextExpenseStatus = {
         pending: ['approved', 'rejected'],
@@ -319,31 +262,23 @@ html[data-bs-theme="dark"] .status-select {
         rejected: [],
       };
 
-      function statusActionsHtml(status) {
-        var next = nextExpenseStatus[status] || [];
-        return next.map(function (s) {
-          var label = s.charAt(0).toUpperCase() + s.slice(1);
-          var btnClass = s === 'rejected' ? 'btn-outline-danger' : 'btn-outline-success';
-          return `<button class="btn btn-xs ${btnClass} btn-status-change me-1" data-status="${s}">${label}</button>`;
-        }).join('');
-      }
-
       var table = new Tabulator("#expenses-table", {
-        data: dummyData,
+        ajaxURL: BASE_URL + "admin/expenses/data",
         layout: "fitColumns",
         pagination: true,
         paginationSize: 10,
         paginationSizeSelector: [10, 25, 50, 100],
+        placeholder: "No expenses found",
         columns: [
           { title: "ID", field: "id", width: 60, sorter: "number" },
           {
             title: "Donation Post",
-            field: "donationpost_id",
+            field: "donationpost_title",
             widthGrow: 2,
             formatter: function (cell) {
-              var id = cell.getValue();
-              var title = donationPostTitles[id] || ("#" + id);
-              return `<a href="/admin/donationposts/view/${id}">${title}</a>`;
+              var d = cell.getRow().getData();
+              var title = d.donationpost_title || ("#" + d.donationpost_id);
+              return `<a href="${BASE_URL}admin/donationposts/edit/${d.donationpost_id}">${title}</a>`;
             }
           },
           { title: "Beneficiary", field: "beneficiary", widthGrow: 1.5 },
@@ -364,15 +299,15 @@ html[data-bs-theme="dark"] .status-select {
             formatter: function (cell) {
               var d = cell.getRow().getData();
               var current = cell.getValue();
-              var options = [current].concat(nextExpenseStatus[current] || []);
-              options = [...new Set(options)];
+              var options = [...new Set([current].concat(nextExpenseStatus[current] || []))];
+              var isTerminal = (nextExpenseStatus[current] || []).length === 0;
 
               var opts = options.map(function (s) {
                 var label = s.charAt(0).toUpperCase() + s.slice(1);
                 return `<option value="${s}" ${s === current ? 'selected' : ''}>${label}</option>`;
               }).join('');
 
-              return `<select class="form-select form-select-sm status-select status-${current}" data-id="${d.id}">${opts}</select>`;
+              return `<select class="form-select form-select-sm status-select status-${current}" data-id="${d.id}" ${isTerminal ? 'disabled' : ''}>${opts}</select>`;
             }
           },
           {
@@ -388,34 +323,36 @@ html[data-bs-theme="dark"] .status-select {
             title: "Actions",
             field: "actions",
             hozAlign: "center",
-            width: 220,
+            width: 110,
             formatter: function (cell) {
               var d = cell.getRow().getData();
               return `
-            <div class="d-flex justify-content-center align-items-center flex-wrap gap-1">
-              <a href="/admin/expenses/edit/${d.id}" class="btn btn-xs btn-outline-primary">
-                <i class="bi bi-pencil"></i>
-              </a>
-              <button class="btn btn-xs btn-outline-danger btn-delete" data-id="${d.id}">
-                <i class="bi bi-trash"></i>
-              </button>
-            </div>`;
+                <div class="d-flex justify-content-center align-items-center gap-1">
+                  <a href="${BASE_URL}admin/expenses/edit/${d.id}" class="btn btn-xs btn-outline-primary">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <button class="btn btn-xs btn-outline-danger btn-delete" data-id="${d.id}">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>`;
             },
             cellClick: function (e, cell) {
-              var row = cell.getRow();
-              var data = row.getData();
-
-              if (e.target.closest('.btn-status-change')) {
-                var newStatus = e.target.closest('.btn-status-change').dataset.status;
-                // dummy mode: update locally
-                // real mode: fire a PATCH/PUT to /admin/expenses/{id}/status then update on success
-                row.update({ status: newStatus, updated_at: new Date().toISOString().slice(0, 19).replace('T', ' ') });
-              }
-
               if (e.target.closest('.btn-delete')) {
                 var id = e.target.closest('.btn-delete').dataset.id;
                 if (confirm('Delete this expense record?')) {
-                  row.delete();
+                  fetch(BASE_URL + "admin/expenses/" + id, {
+                    method: "DELETE",
+                    headers: {
+                      "X-Requested-With": "XMLHttpRequest",
+                    },
+                  })
+                    .then(function (res) {
+                      if (!res.ok) throw new Error("Delete failed");
+                      cell.getRow().delete();
+                    })
+                    .catch(function () {
+                      alert("Failed to delete expense. Please try again.");
+                    });
                 }
               }
             }
@@ -423,14 +360,48 @@ html[data-bs-theme="dark"] .status-select {
         ],
       });
 
+      // ===== Status dropdown change handler — real PATCH request =====
+      document.getElementById('expenses-table').addEventListener('change', function (e) {
+        if (e.target.classList.contains('status-select')) {
+          var select = e.target;
+          var id = select.dataset.id;
+          var newStatus = select.value;
+          var row = table.getRow(id);
+
+          if (!row) return;
+
+          var oldStatus = row.getData().status;
+          if (newStatus === oldStatus) return;
+
+          fetch(BASE_URL + "admin/expenses/" + id + "/status", {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Requested-With": "XMLHttpRequest",
+            },
+            body: JSON.stringify({ status: newStatus }),
+          })
+            .then(function (res) {
+              if (!res.ok) throw new Error("Status update failed");
+              return res.json();
+            })
+            .then(function (updated) {
+              row.update(updated); // refresh with server's actual saved state
+            })
+            .catch(function () {
+              alert("Failed to update status. Please try again.");
+              select.value = oldStatus; // revert the dropdown on failure
+            });
+        }
+      });
+
       document.getElementById('table-filter').addEventListener('input', function (e) {
         var val = e.target.value.toLowerCase();
         table.setFilter(function (data) {
-          var title = donationPostTitles[data.donationpost_id] || '';
           return (
             (data.beneficiary && data.beneficiary.toLowerCase().includes(val)) ||
             (data.status && data.status.toLowerCase().includes(val)) ||
-            title.toLowerCase().includes(val)
+            (data.donationpost_title && data.donationpost_title.toLowerCase().includes(val))
           );
         });
       });
@@ -445,32 +416,6 @@ html[data-bs-theme="dark"] .status-select {
 
       document.getElementById('print-table').addEventListener('click', function () {
         table.print(false, true);
-      });
-
-      document.getElementById('add-expense').addEventListener('click', function () {
-        // wire this to a modal or /admin/expenses/create page when ready
-        alert('Hook this up to your "Add Expense" form/modal.');
-      });
-
-      document.getElementById('expenses-table').addEventListener('change', function (e) {
-        if (e.target.classList.contains('status-select')) {
-          var id = e.target.dataset.id;
-          var newStatus = e.target.value;
-          var row = table.getRow(id);
-
-          if (!row) return;
-
-          var oldStatus = row.getData().status;
-          if (newStatus === oldStatus) return;
-
-          // dummy mode: update locally
-          // real mode: PATCH /admin/expenses/{id}/status, then row.update() on success,
-          // or revert the <select> value on failure
-          row.update({
-            status: newStatus,
-            updated_at: new Date().toISOString().slice(0, 19).replace('T', ' ')
-          });
-        }
       });
 
     });

@@ -13,14 +13,13 @@ class DonationPostModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'fondation_id',
-        'picture',
+        'foundation_id',
         'title',
         'description',
         'deadline',
-        'terget_amount',
+        'target_amount',
         'current_amount',
-        'status'
+        'status',
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -30,14 +29,20 @@ class DonationPostModel extends Model
     protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
+    // no deletedField since useSoftDeletes is false and your table has no deleted_at column
 
     // Validation
-    protected $validationRules      = [];
+    protected $validationRules = [
+        'foundation_id' => 'required|integer',
+        'title'         => 'required|max_length[255]',
+        'description'   => 'required',
+        'deadline'      => 'required|valid_date',
+        'target_amount' => 'required|integer|greater_than[0]',
+    ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
@@ -52,4 +57,12 @@ class DonationPostModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    // Joins foundations so the frontend gets a name, not just an id
+    public function getWithFoundation()
+    {
+        return $this->select('donationposts.*, foundations.name as foundation_name')
+                     ->join('foundations', 'foundations.id = donationposts.foundation_id', 'left')
+                     ->findAll();
+    }
 }

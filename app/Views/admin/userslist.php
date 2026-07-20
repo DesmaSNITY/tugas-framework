@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Foundations</title>
+  <title>Users</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" />
@@ -11,35 +11,35 @@
   <link href="https://unpkg.com/tabulator-tables@6.3.0/dist/css/tabulator_bootstrap5.min.css" rel="stylesheet" />
 
   <style>
-    html[data-bs-theme="dark"] #foundations-table.tabulator,
-    html[data-bs-theme="dark"] #foundations-table .tabulator-header,
-    html[data-bs-theme="dark"] #foundations-table .tabulator-col,
-    html[data-bs-theme="dark"] #foundations-table .tabulator-row,
-    html[data-bs-theme="dark"] #foundations-table .tabulator-row .tabulator-cell,
-    html[data-bs-theme="dark"] #foundations-table .tabulator-footer {
+    html[data-bs-theme="dark"] #users-table.tabulator,
+    html[data-bs-theme="dark"] #users-table .tabulator-header,
+    html[data-bs-theme="dark"] #users-table .tabulator-col,
+    html[data-bs-theme="dark"] #users-table .tabulator-row,
+    html[data-bs-theme="dark"] #users-table .tabulator-row .tabulator-cell,
+    html[data-bs-theme="dark"] #users-table .tabulator-footer {
       background-color: var(--bs-body-bg) !important;
       color: var(--bs-body-color) !important;
       border-color: var(--bs-border-color) !important;
     }
 
-    html[data-bs-theme="dark"] #foundations-table .tabulator-row.tabulator-row-even,
-    html[data-bs-theme="dark"] #foundations-table .tabulator-row.tabulator-row-even .tabulator-cell {
+    html[data-bs-theme="dark"] #users-table .tabulator-row.tabulator-row-even,
+    html[data-bs-theme="dark"] #users-table .tabulator-row.tabulator-row-even .tabulator-cell {
       background-color: var(--bs-tertiary-bg) !important;
     }
 
-    html[data-bs-theme="dark"] #foundations-table .tabulator-row:hover,
-    html[data-bs-theme="dark"] #foundations-table .tabulator-row:hover .tabulator-cell {
+    html[data-bs-theme="dark"] #users-table .tabulator-row:hover,
+    html[data-bs-theme="dark"] #users-table .tabulator-row:hover .tabulator-cell {
       background-color: var(--bs-secondary-bg) !important;
     }
 
-    html[data-bs-theme="dark"] #foundations-table .tabulator-header .tabulator-col,
-    html[data-bs-theme="dark"] #foundations-table .tabulator-col-title {
+    html[data-bs-theme="dark"] #users-table .tabulator-header .tabulator-col,
+    html[data-bs-theme="dark"] #users-table .tabulator-col-title {
       background-color: var(--bs-tertiary-bg) !important;
       color: var(--bs-body-color) !important;
     }
 
-    html[data-bs-theme="dark"] #foundations-table .tabulator-paginator,
-    html[data-bs-theme="dark"] #foundations-table .tabulator-page {
+    html[data-bs-theme="dark"] #users-table .tabulator-paginator,
+    html[data-bs-theme="dark"] #users-table .tabulator-page {
       background-color: var(--bs-tertiary-bg) !important;
       color: var(--bs-body-color) !important;
     }
@@ -70,14 +70,14 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col-sm-6">
-              <h1 class="mb-0 fs-3">Foundations</h1>
+              <h1 class="mb-0 fs-3">Users</h1>
             </div>
             <div class="col-sm-6">
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="<?= base_url('admin') ?>">Home</a></li>
                   <li class="breadcrumb-item"><a href="#">Tables</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Foundations</li>
+                  <li class="breadcrumb-item active" aria-current="page">Users</li>
                 </ol>
               </nav>
             </div>
@@ -88,7 +88,7 @@
         <div class="container-fluid">
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">Foundations</h3>
+              <h3 class="card-title">Users</h3>
               <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 16rem">
                   <span class="input-group-text">
@@ -115,12 +115,12 @@
                     Print
                   </button>
                 </div>
-                <a href="<?= base_url('admin/foundations/create') ?>" class="btn btn-sm btn-primary">
+                <a href="<?= base_url('admin/users/create') ?>" class="btn btn-sm btn-primary">
                   <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
-                  Add Foundation
+                  Add User
                 </a>
               </div>
-              <div id="foundations-table"></div>
+              <div id="users-table"></div>
             </div>
             <div class="card-footer text-secondary small">
               Powered by
@@ -174,31 +174,54 @@
 
       var BASE_URL = "<?= base_url() ?>";
 
-      var statusColors = {
-        active: 'bg-success',
-        inactive: 'bg-danger',
+      var activeColors = {
+        1: 'bg-success',
+        0: 'bg-secondary',
       };
 
-      var table = new Tabulator("#foundations-table", {
-        ajaxURL: BASE_URL + "admin/foundations/data",
+      var table = new Tabulator("#users-table", {
+        ajaxURL: BASE_URL + "admin/users/data",
         layout: "fitColumns",
         pagination: true,
         paginationSize: 10,
         paginationSizeSelector: [10, 25, 50, 100],
-        placeholder: "No foundations found",
+        placeholder: "No users found",
         columns: [
-          { title: "ID", field: "id", width: 70, sorter: "number" },
-          { title: "Name", field: "name", widthGrow: 2 },
-          { title: "Location", field: "location", widthGrow: 1 },
           {
-            title: "Status",
-            field: "status",
+            title: "Name",
+            field: "name",
+            widthGrow: 1.5,
+            formatter: function (cell) {
+              var d = cell.getRow().getData();
+              var name = [d.first_name, d.last_name].filter(Boolean).join(' ');
+              return name || '<span class="text-secondary fst-italic">No name set</span>';
+            },
+            sorter: function (a, b, aRow, bRow) {
+              var an = [aRow.getData().first_name, aRow.getData().last_name].filter(Boolean).join(' ');
+              var bn = [bRow.getData().first_name, bRow.getData().last_name].filter(Boolean).join(' ');
+              return an.localeCompare(bn);
+            }
+          },
+          { title: "Username", field: "username", widthGrow: 1 },
+          {
+            title: "Active",
+            field: "active",
             hozAlign: "center",
-            width: 110,
+            width: 100,
             formatter: function (cell) {
               var v = cell.getValue();
-              var cls = statusColors[v] || 'bg-secondary';
-              return `<span class="badge ${cls} text-capitalize">${v}</span>`;
+              var cls = activeColors[v] || 'bg-secondary';
+              var label = v == 1 ? 'Active' : 'Inactive';
+              return `<span class="badge ${cls}">${label}</span>`;
+            }
+          },
+          {
+            title: "Last Active",
+            field: "last_active",
+            sorter: "datetime",
+            formatter: function (cell) {
+              var v = cell.getValue();
+              return v ? new Date(v).toLocaleString() : '<span class="text-secondary">Never</span>';
             }
           },
           {
@@ -214,11 +237,14 @@
             title: "Actions",
             field: "actions",
             hozAlign: "center",
-            width: 130,
+            width: 150,
             formatter: function (cell) {
               var id = cell.getRow().getData().id;
               return `
-                <a href="${BASE_URL}admin/foundations/edit/${id}" class="btn btn-xs btn-outline-primary me-1">
+                <a href="${BASE_URL}admin/users/view/${id}" class="btn btn-xs btn-outline-secondary me-1">
+                  <i class="bi bi-eye"></i>
+                </a>
+                <a href="${BASE_URL}admin/users/edit/${id}" class="btn btn-xs btn-outline-primary me-1">
                   <i class="bi bi-pencil"></i>
                 </a>
                 <button class="btn btn-xs btn-outline-danger btn-delete" data-id="${id}">
@@ -228,8 +254,8 @@
             cellClick: function (e, cell) {
               if (e.target.closest('.btn-delete')) {
                 var id = e.target.closest('.btn-delete').dataset.id;
-                if (confirm('Delete this foundation?')) {
-                  fetch(BASE_URL + "admin/foundations/" + id, {
+                if (confirm('Delete this user?')) {
+                  fetch(BASE_URL + "admin/users/" + id, {
                     method: "DELETE",
                     headers: {
                       "X-Requested-With": "XMLHttpRequest",
@@ -240,7 +266,7 @@
                       cell.getRow().delete();
                     })
                     .catch(function () {
-                      alert("Failed to delete foundation. Please try again.");
+                      alert("Failed to delete user. Please try again.");
                     });
                 }
               }
@@ -252,20 +278,20 @@
       document.getElementById('table-filter').addEventListener('input', function (e) {
         var val = e.target.value.toLowerCase();
         table.setFilter(function (data) {
+          var name = [data.first_name, data.last_name].filter(Boolean).join(' ').toLowerCase();
           return (
-            (data.name && data.name.toLowerCase().includes(val)) ||
-            (data.location && data.location.toLowerCase().includes(val)) ||
-            (data.status && data.status.toLowerCase().includes(val))
+            name.includes(val) ||
+            (data.username && data.username.toLowerCase().includes(val))
           );
         });
       });
 
       document.getElementById('export-csv').addEventListener('click', function () {
-        table.download("csv", "foundations.csv");
+        table.download("csv", "users.csv");
       });
 
       document.getElementById('export-json').addEventListener('click', function () {
-        table.download("json", "foundations.json");
+        table.download("json", "users.json");
       });
 
       document.getElementById('print-table').addEventListener('click', function () {

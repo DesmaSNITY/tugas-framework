@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class FondationModel extends Model
+class FoundationModel extends Model
 {
-    protected $table            = 'fondations';
+    protected $table            = 'foundations'; // ⬅️ fixed: was 'fondations'
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
@@ -25,14 +25,18 @@ class FondationModel extends Model
     protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true; // ⬅️ fixed: was false, but your table has created_at/updated_at
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
+    // deletedField removed — useSoftDeletes is false and your table has no deleted_at column
 
     // Validation
-    protected $validationRules      = [];
+    protected $validationRules = [
+        'name'     => 'required|max_length[150]',
+        'location' => 'required|max_length[255]',
+        'status'   => 'permit_empty|in_list[active,inactive]',
+    ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
