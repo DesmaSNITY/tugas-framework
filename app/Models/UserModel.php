@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use CodeIgniter\Shield\Models\UserModel as ShieldUserModel;
+use CodeIgniter\Model;
 
-class UserModel extends ShieldUserModel
+class UserModel extends Model
 {
     protected function initialize(): void
     {
