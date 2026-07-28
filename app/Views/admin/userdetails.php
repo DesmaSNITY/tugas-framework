@@ -39,8 +39,8 @@
             <div class="col-sm-6">
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb float-sm-end">
-                  <li class="breadcrumb-item"><a href="#">Home</a></li>
-                  <li class="breadcrumb-item"><a href="/admin/users">Users</a></li>
+                  <li class="breadcrumb-item"><a href="<?= base_url('admin') ?>">Home</a></li>
+                  <li class="breadcrumb-item"><a href="<?= base_url('admin/users') ?>">Users</a></li>
                   <li class="breadcrumb-item active" aria-current="page">View</li>
                 </ol>
               </nav>
@@ -170,7 +170,7 @@
           <div id="user-detail-notfound" class="d-none text-center text-secondary py-5">
             <i class="bi bi-exclamation-triangle fs-1"></i>
             <p class="mt-2 mb-0">User not found.</p>
-            <a href="/admin/users" class="btn btn-sm btn-secondary mt-3">Back to Users</a>
+            <a href="<?= base_url('admin/users') ?>" class="btn btn-sm btn-secondary mt-3">Back to Users</a>
           </div>
 
         </div>
@@ -215,25 +215,14 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-      // ===== DUMMY DATA (replace with fetch to /admin/users/{id}/data later) =====
-      // In real mode, get the id from the URL (CI4 route segment) and fetch that
-      // user's full record + joined email from auth_identities + role from groups_users.
-      var dummyUsers = {
-        1: { id: 1, username: "admin01", first_name: "Budi", last_name: "Santoso", email: "budi@example.com", phone: "081234567890", status: "active", status_message: null, active: 1, role: "Super Admin", avatar: null, last_active: "2026-07-17 09:20:00", created_at: "2026-01-10 08:00:00", updated_at: "2026-07-17 09:20:00", deleted_at: null },
-        2: { id: 2, username: "sari.w", first_name: "Sari", last_name: "Wulandari", email: "sari@example.com", phone: "081298765432", status: "active", status_message: null, active: 1, role: "Admin", avatar: null, last_active: "2026-07-16 15:40:00", created_at: "2026-02-05 10:30:00", updated_at: "2026-07-16 15:40:00", deleted_at: null },
-        3: { id: 3, username: "rudi_h", first_name: "Rudi", last_name: "Hartono", email: "rudi@example.com", phone: null, status: "pending", status_message: "Pending email verification", active: 0, role: "Foundation Admin", avatar: null, last_active: null, created_at: "2026-06-01 12:00:00", updated_at: "2026-06-01 12:00:00", deleted_at: null },
-        4: { id: 4, username: "dewi.k", first_name: "Dewi", last_name: "Kusuma", email: "dewi@example.com", phone: "081355566677", status: "active", status_message: null, active: 1, role: "Foundation Admin", avatar: null, last_active: "2026-07-10 08:15:00", created_at: "2026-03-20 09:00:00", updated_at: "2026-07-10 08:15:00", deleted_at: null },
-        5: { id: 5, username: "agus_p", first_name: "Agus", last_name: "Pratama", email: "agus@example.com", phone: "081911122233", status: "suspended", status_message: "Account suspended", active: 0, role: "Admin", avatar: null, last_active: "2026-05-01 14:00:00", created_at: "2026-01-25 11:00:00", updated_at: "2026-06-02 09:00:00", deleted_at: null },
-      };
-      // =============================================================
+      var BASE_URL = "<?= base_url() ?>";
 
+      // Real id comes from the URL path: admin/users/view/{id}
+      // Grab the last numeric segment from the current URL.
       function getUserIdFromUrl() {
-        // dummy mode: read ?id=1 from query string for local testing
-        // real mode (CI4): the id comes from the route segment, and the server
-        // should render this page with the id already known (e.g. via a data
-        // attribute or inline JSON), no query string needed
-        var params = new URLSearchParams(window.location.search);
-        return parseInt(params.get('id'), 10) || 1; // defaults to user 1 for preview
+        var parts = window.location.pathname.split('/').filter(Boolean);
+        var last = parts[parts.length - 1];
+        return parseInt(last, 10) || null;
       }
 
       function fmt(v, fallback) {
@@ -271,7 +260,7 @@
 
         document.getElementById('user-id').textContent = u.id;
         document.getElementById('user-role').textContent = u.role || '—';
-        document.getElementById('user-created-at').textContent = new Date(u.created_at).toLocaleDateString();
+        document.getElementById('user-created-at').textContent = u.created_at ? new Date(u.created_at).toLocaleDateString() : '—';
         document.getElementById('user-last-active').innerHTML = u.last_active ? new Date(u.last_active).toLocaleString() : '<span class="text-secondary">Never</span>';
 
         document.getElementById('user-email').innerHTML = fmt(u.email);
@@ -285,15 +274,28 @@
         document.getElementById('user-updated-at').innerHTML = fmtDate(u.updated_at);
         document.getElementById('user-deleted-at').innerHTML = fmtDate(u.deleted_at);
 
-        document.getElementById('user-edit-link').href = '/admin/users/edit/' + u.id;
+        document.getElementById('user-edit-link').href = BASE_URL + 'admin/users/edit/' + u.id;
       }
 
-      // ===== dummy mode: look up locally =====
-      // ===== real mode: fetch('/admin/users/' + id + '/data').then(...) =====
       var id = getUserIdFromUrl();
-      setTimeout(function () {
-        renderUser(dummyUsers[id]);
-      }, 300); // small delay just to show the loading state in dummy mode
+
+      if (!id) {
+        document.getElementById('user-detail-loading').classList.add('d-none');
+        document.getElementById('user-detail-notfound').classList.remove('d-none');
+      } else {
+        fetch(BASE_URL + "admin/users/view/" + id + "/data")
+          .then(function (res) {
+            if (!res.ok) throw new Error('Not found');
+            return res.json();
+          })
+          .then(function (user) {
+            renderUser(user);
+          })
+          .catch(function () {
+            document.getElementById('user-detail-loading').classList.add('d-none');
+            document.getElementById('user-detail-notfound').classList.remove('d-none');
+          });
+      }
 
     });
   </script>

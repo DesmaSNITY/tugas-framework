@@ -39,7 +39,7 @@
                     <h3 class="card-title">Create Donation Post</h3>
                 </div>
 
-                <form action="<?= site_url('admin/donation/create') ?>" method="post" enctype="multipart/form-data">
+                <form action="<?= site_url('admin/donationposts') ?>" method="post" enctype="multipart/form-data">
                     <?= csrf_field() ?>
                     <div class="card-body">
                         <div class="row">
@@ -69,13 +69,13 @@
                                         <option selected disabled>
                                             Select Foundation
                                         </option>
-                                        <?php /*
+                                        
                                         <?php foreach ($foundations as $foundation): ?>
                                             <option value="<?= $foundation['id'] ?>">
                                                 <?= esc($foundation['name']) ?>
                                             </option>
                                         <?php endforeach ?>
-                                        */?>
+                                        
                                     </select>
                                 </div>
 

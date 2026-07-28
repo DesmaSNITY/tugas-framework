@@ -42,7 +42,7 @@ service('auth')->routes($routes);
 
 // $routes->get('test-user-fields', 'TestController::userFields');
 
-$routes->group('admin', ['namespace' => 'App\Controllers\Admin' /*, 'filter' => 'session' */], function ($routes) {
+$routes->group('admin', ['namespace' => 'App\Controllers\Admin' , 'filter' => 'session' ], function ($routes) {
 
      // Donation Posts
     $routes->get('donationposts', [DonationPostsController::class, 'index']);
@@ -66,6 +66,8 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin' /*, 'filter' => 
     $routes->get('expenses', [ExpensesController::class, 'index']);
     $routes->get('expenses/data', [ExpensesController::class, 'data']);
     $routes->get('expenses/create', [ExpensesController::class, 'create']);
+    $routes->get('expenses/edit/(:num)', [ExpensesController::class, 'edit']);
+    $routes->post('expenses/update/(:num)', [ExpensesController::class, 'update']);
     $routes->post('expenses', [ExpensesController::class, 'store']);
     $routes->patch('expenses/(:num)/status', [ExpensesController::class, 'updateStatus']);
     $routes->delete('expenses/(:num)', [ExpensesController::class, 'delete']);

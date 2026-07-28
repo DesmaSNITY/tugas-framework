@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Expense</title>
+  <title>Edit Expense</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" />
@@ -34,14 +34,14 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col-sm-6">
-              <h1 class="mb-0 fs-3">Add Expense</h1>
+              <h1 class="mb-0 fs-3">Edit Expense</h1>
             </div>
             <div class="col-sm-6">
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="<?= base_url('admin') ?>">Home</a></li>
                   <li class="breadcrumb-item"><a href="<?= base_url('admin/expenses') ?>">Expenses</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Add</li>
+                  <li class="breadcrumb-item active" aria-current="page">Edit</li>
                 </ol>
               </nav>
             </div>
@@ -54,9 +54,9 @@
             <div class="col-lg-7">
               <div class="card">
                 <div class="card-header">
-                  <h3 class="card-title">New Expense</h3>
+                  <h3 class="card-title">Edit Expense #<?= esc($expense['id']) ?></h3>
                 </div>
-                <form id="add-expense-form" novalidate>
+                <form id="edit-expense-form" novalidate>
                   <div class="card-body">
 
                     <div id="form-alert" class="alert alert-danger d-none" role="alert"></div>
@@ -64,7 +64,13 @@
                     <div class="mb-3">
                       <label for="expense-donationpost" class="form-label">Donation Post</label>
                       <select class="form-select" id="expense-donationpost" name="donationpost_id" required>
-                        <option value="" selected disabled>Select a donation post&hellip;</option>
+                        <option value="" disabled>Select a donation post&hellip;</option>
+                        <?php foreach ($donationposts as $post): ?>
+                          <option value="<?= $post['id'] ?>"
+                            <?= (int)$expense['donationpost_id'] === (int)$post['id'] ? 'selected' : '' ?>>
+                            <?= esc($post['title']) ?>
+                          </option>
+                        <?php endforeach ?>
                       </select>
                       <div class="invalid-feedback">Please select a donation post.</div>
                     </div>
@@ -72,7 +78,7 @@
                     <div class="mb-3">
                       <label for="expense-beneficiary" class="form-label">Beneficiary</label>
                       <input type="text" class="form-control" id="expense-beneficiary" name="beneficiary"
-                        placeholder="e.g. Apotek Sehat Jaya" required>
+                        value="<?= esc($expense['beneficiary']) ?>" required>
                       <div class="invalid-feedback">Please enter a beneficiary.</div>
                     </div>
 
@@ -81,16 +87,15 @@
                       <div class="input-group">
                         <span class="input-group-text">Rp</span>
                         <input type="number" class="form-control" id="expense-amount" name="amount" min="1" step="1"
-                          placeholder="e.g. 5000000" required>
+                          value="<?= esc($expense['amount']) ?>" required>
                         <div class="invalid-feedback">Please enter a valid amount.</div>
                       </div>
                     </div>
 
                     <div class="mb-0">
                       <label class="form-label">Status</label>
-                      <input type="text" class="form-control" value="Pending" disabled>
-                      <div class="form-text">New expenses always start as Pending and follow the approval workflow
-                        afterward.</div>
+                      <input type="text" class="form-control text-capitalize" value="<?= esc($expense['status']) ?>" disabled>
+                      <div class="form-text">Status changes go through the approval workflow on the Expenses list, not here.</div>
                     </div>
 
                   </div>
@@ -98,7 +103,7 @@
                     <a href="<?= base_url('admin/expenses') ?>" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">
                       <i class="bi bi-check-lg me-1" aria-hidden="true"></i>
-                      Save Expense
+                      Save Changes
                     </button>
                   </div>
                 </form>
@@ -148,29 +153,10 @@
     document.addEventListener('DOMContentLoaded', function () {
 
       var BASE_URL = "<?= base_url() ?>";
+      var expenseId = <?= (int) $expense['id'] ?>;
 
-      var donationPostSelect = document.getElementById('expense-donationpost');
-      var form = document.getElementById('add-expense-form');
+      var form = document.getElementById('edit-expense-form');
       var formAlert = document.getElementById('form-alert');
-
-      // ===== Load real donation posts into the dropdown =====
-      fetch(BASE_URL + "admin/donationposts/data")
-        .then(function (res) {
-          if (!res.ok) throw new Error("Failed to load donation posts");
-          return res.json();
-        })
-        .then(function (posts) {
-          posts.forEach(function (post) {
-            var opt = document.createElement('option');
-            opt.value = post.id;
-            opt.textContent = post.title;
-            donationPostSelect.appendChild(opt);
-          });
-        })
-        .catch(function () {
-          formAlert.textContent = 'Could not load donation posts. Please refresh the page.';
-          formAlert.classList.remove('d-none');
-        });
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -184,7 +170,7 @@
         }
 
         var payload = {
-          donationpost_id: parseInt(donationPostSelect.value, 10),
+          donationpost_id: parseInt(document.getElementById('expense-donationpost').value, 10),
           beneficiary: document.getElementById('expense-beneficiary').value.trim(),
           amount: parseInt(document.getElementById('expense-amount').value, 10),
         };
@@ -192,7 +178,7 @@
         var submitBtn = form.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
 
-        fetch(BASE_URL + "admin/expenses", {
+        fetch(BASE_URL + "admin/expenses/update/" + expenseId, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -201,14 +187,18 @@
           body: JSON.stringify(payload)
         })
           .then(function (res) {
-            if (!res.ok) throw new Error('Save failed');
+            if (!res.ok) {
+              return res.json().then(function (err) {
+                throw new Error(err.errors ? Object.values(err.errors).join(' ') : 'Update failed');
+              });
+            }
             return res.json();
           })
           .then(function () {
             window.location.href = BASE_URL + "admin/expenses";
           })
-          .catch(function () {
-            formAlert.textContent = 'Something went wrong saving this expense. Please try again.';
+          .catch(function (err) {
+            formAlert.textContent = err.message || 'Something went wrong saving changes. Please try again.';
             formAlert.classList.remove('d-none');
             submitBtn.disabled = false;
           });

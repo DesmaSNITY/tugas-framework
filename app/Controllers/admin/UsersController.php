@@ -34,37 +34,41 @@ class UsersController extends BaseController
         return view('admin/addadmin.php');
     }
 
-    public function store()
-    {
-        $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
+public function store()
+{
+    $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
 
-        if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
-            return $this->response->setStatusCode(422)->setJSON(['error' => 'Missing required fields']);
-        }
-
-        $user = new \CodeIgniter\Shield\Entities\User([
-            'username'   => $data['username'],
-            'active'     => $data['active'] ?? 1,
-            'first_name' => $data['first_name'] ?? null,
-            'last_name'  => $data['last_name'] ?? null,
-            'phone'      => $data['phone'] ?? null,
-        ]);
-
-        $user->createEmailIdentity([
-            'email'    => $data['email'],
-            'password' => $data['password'],
-        ]);
-
-        $this->model->save($user); // now saves custom fields too, since allowedFields includes them
-
-        $newUser = $this->model->findByCredentials(['email' => $data['email']]);
-
-        if (! empty($data['role'])) {
-            $newUser->syncGroups($data['role']);
-        }
-
-        return $this->response->setJSON(['id' => $newUser->id]);
+    if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
+        return $this->response->setStatusCode(422)->setJSON(['error' => 'Missing required fields']);
     }
+
+    // 1. Create and save the user WITHOUT the identity first
+    $user = new \CodeIgniter\Shield\Entities\User([
+        'username'   => $data['username'],
+        'active'     => $data['active'] ?? 1,
+        'first_name' => $data['first_name'] ?? null,
+        'last_name'  => $data['last_name'] ?? null,
+        'phone'      => $data['phone'] ?? null,
+    ]);
+
+    $this->model->save($user);
+
+    // 2. Re-fetch — this one has a real id
+    $newUser = $this->model->find($this->model->getInsertID());
+
+    // 3. NOW create the email identity — id exists at this point
+    $newUser->createEmailIdentity([
+        'email'    => $data['email'],
+        'password' => $data['password'],
+    ]);
+
+    // 4. Assign role/group if provided
+    if (! empty($data['role'])) {
+        $newUser->syncGroups($data['role']);
+    }
+
+    return $this->response->setJSON(['id' => $newUser->id]);
+}
 
     public function view($id)
     {
@@ -77,8 +81,25 @@ class UsersController extends BaseController
         $email = $this->getEmailForUser($id);
         $role  = $this->getRoleForUser($id);
 
-        return view('admin/users/view', [
+        return view('admin/userdetails', [
             'user'  => $user,
+            'email' => $email,
+            'role'  => $role,
+        ]);
+    }
+
+    public function edit($id)
+    {
+        $user = $this->model->find($id);
+        if (! $user) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+    
+        $email = $this->getEmailForUser($id);
+        $role  = $this->getRoleForUser($id);
+    
+        return view('admin/edituser', [
+            'user'  => $user->toArray(),
             'email' => $email,
             'role'  => $role,
         ]);
@@ -102,12 +123,28 @@ class UsersController extends BaseController
     {
         $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
 
-        $this->model->update($id, [
+        $user = $this->model->find($id);
+        if (! $user) {
+            return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
+        }
+
+        $user->fill([
             'first_name' => $data['first_name'] ?? null,
             'last_name'  => $data['last_name'] ?? null,
             'phone'      => $data['phone'] ?? null,
-            'active'     => isset($data['active']) ? (int) $data['active'] : null,
+            'active'     => isset($data['active']) ? (int) $data['active'] : $user->active,
         ]);
+
+        // Only touch password if a new one was actually submitted
+        if (! empty($data['new_password'])) {
+            $user->password = $data['new_password'];
+        }
+
+        $this->model->save($user); // saves profile fields AND password identity (if set) in one call
+
+        if (! empty($data['role'])) {
+            $user->syncGroups($data['role']);
+        }
 
         return $this->response->setJSON($this->model->find($id));
     }
