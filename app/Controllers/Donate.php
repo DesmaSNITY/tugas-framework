@@ -16,23 +16,54 @@ class Donate extends BaseController
         $this->donationModel = new DonationModel();
     }
 
+    public function category($category)
+{
+    if ($category == 'all') {
+        $programs = $this->programModel->getActivePrograms();
+    } else {
+        $programs = $this->programModel
+            ->where('is_active', 1)
+            ->where('category', $category)
+            ->findAll();
+    }
+
+    foreach ($programs as &$program) {
+        $program['progress'] = $this->programModel->progressPercentage($program);
+    }
+
+    return view('donate/index', [
+        'title' => 'Program Donasi',
+        'programs' => $programs,
+        'selectedCategory' => $category
+    ]);
+}
     /**
      * Halaman listing "Program Donasi Terbaru".
      */
-    public function index(): string
-    {
+    
+public function index()
+{
+    $category = $this->request->getGet('category');
+
+    if ($category) {
+        $programs = $this->programModel
+            ->where('is_active',1)
+            ->where('category',$category)
+            ->findAll();
+    } else {
         $programs = $this->programModel->getActivePrograms();
-
-        foreach ($programs as &$program) {
-            $program['progress'] = $this->programModel->progressPercentage($program);
-        }
-
-        return view('donate/index', [
-            'title'    => 'Mirae — Program Donasi',
-            'programs' => $programs,
-        ]);
     }
 
+    foreach($programs as &$program){
+        $program['progress'] = $this->programModel->progressPercentage($program);
+    }
+
+    return view('donate/index',[
+        'title'=>'Program Donasi',
+        'programs'=>$programs,
+        'selectedCategory'=>$category
+    ]);
+}
     /**
      * Halaman form "Donate Sekarang" (langkah 1: Isi Donasi).
      */
