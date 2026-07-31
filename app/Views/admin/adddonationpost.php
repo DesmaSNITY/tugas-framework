@@ -117,7 +117,7 @@
 
                                     <div class="card-body">
 
-                                        <input type="file" class="filepond" name="image">
+                                        <input type="file" class="filepond" name="picture">
 
                                     </div>
                                 </div>

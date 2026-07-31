@@ -45,6 +45,14 @@ class DonationPostsController extends BaseController
         }
 
         $data['status'] = 'draft';
+
+        $pictureFile = $this->request->getFile('picture');
+        if ($pictureFile && $pictureFile->isValid() && ! $pictureFile->hasMoved()) {
+            $newName = $pictureFile->getRandomName();
+            $pictureFile->move(ROOTPATH . 'public/uploads/donationposts', $newName);
+            $data['picture'] = $newName;
+        }
+
         $id = $this->model->insert($data);
 
         if ($this->request->is('json')) {
@@ -70,14 +78,15 @@ class DonationPostsController extends BaseController
 
     public function update($id)
     {
-        $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
-
-        if (! $this->model->find($id)) {
+        $post = $this->model->find($id);
+        if (! $post) {
             if ($this->request->is('json')) {
                 return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
             }
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
+
+        $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
 
         if (! $this->model->validate($data)) {
             if ($this->request->is('json')) {
@@ -86,12 +95,22 @@ class DonationPostsController extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->model->errors());
         }
 
+        $pictureFile = $this->request->getFile('picture');
+        if ($pictureFile && $pictureFile->isValid() && ! $pictureFile->hasMoved()) {
+            if (! empty($post['picture']) && file_exists(ROOTPATH . 'public/uploads/donationposts/' . $post['picture'])) {
+                unlink(ROOTPATH . 'public/uploads/donationposts/' . $post['picture']);
+            }
+
+            $newName = $pictureFile->getRandomName();
+            $pictureFile->move(ROOTPATH . 'public/uploads/donationposts', $newName);
+            $data['picture'] = $newName;
+        }
+
         $this->model->update($id, $data);
 
         if ($this->request->is('json')) {
             return $this->response->setJSON($this->model->find($id));
         }
-
         return redirect()->to(site_url('admin/donationposts'))->with('success', 'Donation post updated successfully.');
     }
 

@@ -139,7 +139,15 @@
                         <h3 class="card-title">Donation Image</h3>
                       </div>
                       <div class="card-body">
-                        <p class="text-secondary small mb-0">Image upload isn't wired up yet — coming later.</p>
+                        <?php if (!empty($post['picture'])): ?>
+                          <img src="<?= base_url('uploads/donationposts/' . $post['picture']) ?>" class="img-fluid rounded mb-3"
+                            alt="Current image">
+                          <p class="text-secondary small">Current image. Upload a new one below to replace it.</p>
+                        <?php else: ?>
+                          <p class="text-secondary small">No image uploaded yet.</p>
+                        <?php endif; ?>
+                      
+                        <input type="file" class="form-control" name="picture" accept="image/*">
                       </div>
                     </div>
                   </div>
@@ -193,7 +201,7 @@
     });
   </script>
 
-  <script>
+<script>
     document.addEventListener('DOMContentLoaded', function () {
 
       var BASE_URL = "<?= base_url() ?>";
@@ -215,14 +223,18 @@
           return;
         }
 
-        var payload = {
-          title: document.getElementById('title').value.trim(),
-          description: document.getElementById('description').value.trim(),
-          foundation_id: parseInt(document.getElementById('foundation_id').value, 10),
-          deadline: document.getElementById('deadline').value.replace('T', ' ') + ':00',
-          target_amount: parseInt(document.getElementById('target_amount').value, 10),
-          status: document.getElementById('status').value,
-        };
+        var formData = new FormData();
+        formData.append('title', document.getElementById('title').value.trim());
+        formData.append('description', document.getElementById('description').value.trim());
+        formData.append('foundation_id', document.getElementById('foundation_id').value);
+        formData.append('deadline', document.getElementById('deadline').value.replace('T', ' ') + ':00');
+        formData.append('target_amount', document.getElementById('target_amount').value);
+        formData.append('status', document.getElementById('status').value);
+
+        var pictureInput = document.querySelector('input[name="picture"]');
+        if (pictureInput.files[0]) {
+          formData.append('picture', pictureInput.files[0]);
+        }
 
         var submitBtn = form.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
@@ -230,10 +242,11 @@
         fetch(BASE_URL + "admin/donationposts/update/" + postId, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
+            // no Content-Type here — the browser sets multipart/form-data
+            // with the correct boundary automatically for FormData bodies
           },
-          body: JSON.stringify(payload)
+          body: formData
         })
           .then(function (res) {
             if (!res.ok) {

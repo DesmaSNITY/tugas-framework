@@ -20,6 +20,7 @@ class DonationPostModel extends Model
         'target_amount',
         'current_amount',
         'status',
+        'picture',
     ];
 
     protected bool $allowEmptyInserts = false;
