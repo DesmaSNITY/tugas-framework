@@ -4,47 +4,48 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
+/**
+ * Model untuk tabel `expenses` (pengeluaran dana dari program donasi).
+ */
 class ExpenseModel extends Model
 {
     protected $table            = 'expenses';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
-    protected $protectFields    = true;
     protected $allowedFields    = [
         'donationpost_id',
         'amount',
-        'status'
+        'beneficiary',
+        'status', // pending | approved | paid | rejected
     ];
 
-    protected bool $allowEmptyInserts = false;
-    protected bool $updateOnlyChanged = true;
-
-    protected array $casts = [];
-    protected array $castHandlers = [];
-
-    // Dates
-    protected $useTimestamps = false;
-    protected $dateFormat    = 'datetime';
+    protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
 
-    // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
-    protected $skipValidation       = false;
-    protected $cleanValidationRules = true;
+    protected $validationRules = [
+        'donationpost_id' => 'required|numeric',
+        'amount'          => 'required|numeric|greater_than[0]',
+    ];
 
-    // Callbacks
-    protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
-    protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
-    protected $beforeFind     = [];
-    protected $afterFind      = [];
-    protected $beforeDelete   = [];
-    protected $afterDelete    = [];
+    /**
+     * Total pengeluaran yang berstatus "paid".
+     */
+    public function totalExpense(): float
+    {
+        return (float) ($this->selectSum('amount')->where('status', 'paid')->first()['amount'] ?? 0);
+    }
+
+    /**
+     * Rekap total pengeluaran "paid" per bulan pada tahun tertentu.
+     */
+    public function monthlyExpense(int $year): array
+    {
+        return $this->select("MONTH(created_at) as month, SUM(amount) as total")
+                     ->where('status', 'paid')
+                     ->where('YEAR(created_at)', $year)
+                     ->groupBy('MONTH(created_at)')
+                     ->findAll();
+    }
 }
