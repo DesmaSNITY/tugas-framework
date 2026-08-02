@@ -86,4 +86,20 @@ class TransactionModel extends Model
                      ->orderBy('transactions.created_at', 'DESC')
                      ->findAll();
     }
+
+    /**
+     * Semua transaksi donasi, sekalian nama donatur & nama yayasan penerima
+     * (dipakai untuk tabel gabungan "Donation Transactions and Expenses" di Laporan).
+     */
+    public function getAllWithDetails(): array
+    {
+        return $this->select("transactions.*,
+                TRIM(CONCAT(users.first_name, ' ', COALESCE(users.last_name, ''))) as donor_name,
+                foundations.name as foundation_name")
+                     ->join('users', 'users.id = transactions.user_id', 'left')
+                     ->join('donationposts', 'donationposts.id = transactions.donationpost_id', 'left')
+                     ->join('foundations', 'foundations.id = donationposts.foundation_id', 'left')
+                     ->orderBy('transactions.created_at', 'DESC')
+                     ->findAll();
+    }
 }

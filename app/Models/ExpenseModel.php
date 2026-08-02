@@ -48,4 +48,17 @@ class ExpenseModel extends Model
                      ->groupBy('MONTH(created_at)')
                      ->findAll();
     }
+
+    /**
+     * Semua pengeluaran, sekalian nama yayasan yang mengeluarkan dananya
+     * (dipakai untuk tabel gabungan "Donation Transactions and Expenses" di Laporan).
+     */
+    public function getAllWithDetails(): array
+    {
+        return $this->select('expenses.*, foundations.name as foundation_name')
+                     ->join('donationposts', 'donationposts.id = expenses.donationpost_id', 'left')
+                     ->join('foundations', 'foundations.id = donationposts.foundation_id', 'left')
+                     ->orderBy('expenses.created_at', 'DESC')
+                     ->findAll();
+    }
 }

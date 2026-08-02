@@ -22,9 +22,10 @@ class Dashboard extends BaseController
         $totalTarget   = (float) ($postModel->selectSum('target_amount')->first()['target_amount'] ?? 0);
         $donorCount    = $transactionModel->donorCount();
 
-        $year            = (int) date('Y');
-        $monthlyIncome   = $transactionModel->monthlyIncome($year);
-        $monthlyExpense  = $expenseModel->monthlyExpense($year);
+        // ==================== GRAFIK PEMASUKAN vs PENGELUARAN ====================
+        $year           = (int) date('Y');
+        $monthlyIncome  = $transactionModel->monthlyIncome($year);
+        $monthlyExpense = $expenseModel->monthlyExpense($year);
 
         $monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
         $chartData  = [];
@@ -41,6 +42,47 @@ class Dashboard extends BaseController
             ];
         }
 
+        // ==================== TABEL GABUNGAN: DONASI + PENGELUARAN ====================
+        $transactions = $transactionModel->getAllWithDetails();
+        $expenses     = $expenseModel->getAllWithDetails();
+
+        $combined = [];
+
+        foreach ($transactions as $trx) {
+            $combined[] = [
+                'date'     => $trx['created_at'],
+                'type'     => 'Donasi',
+                'name'     => $trx['donor_name'] ?: '-',
+                'amount'   => $trx['amount'],
+                'penerima' => $trx['foundation_name'] ?: '-',
+                'status'   => $trx['status'],
+            ];
+        }
+
+        foreach ($expenses as $exp) {
+            $combined[] = [
+                'date'     => $exp['created_at'],
+                'type'     => 'Pengeluaran',
+                'name'     => $exp['foundation_name'] ?: '-',
+                'amount'   => $exp['amount'],
+                'penerima' => $exp['beneficiary'] ?: '-',
+                'status'   => $exp['status'],
+            ];
+        }
+
+        usort($combined, static fn ($a, $b) => strtotime($b['date']) <=> strtotime($a['date']));
+
+        // pagination sederhana lewat query string ?page=
+        $perPage    = 10;
+        $totalRows  = count($combined);
+        $totalPages = max(1, (int) ceil($totalRows / $perPage));
+        $page       = (int) ($this->request->getGet('page') ?? 1);
+        $page       = max(1, min($page, $totalPages));
+        $tableRows  = array_slice($combined, ($page - 1) * $perPage, $perPage);
+
+        $showingFrom = $totalRows === 0 ? 0 : (($page - 1) * $perPage) + 1;
+        $showingTo   = min($page * $perPage, $totalRows);
+
         return view('dashboard/laporan', [
             'title'         => 'Mirae — Laporan Donasi',
             'totalIncome'   => $totalIncome,
@@ -50,6 +92,12 @@ class Dashboard extends BaseController
             'totalTarget'   => $totalTarget,
             'donorCount'    => $donorCount,
             'chartData'     => $chartData,
+            'tableRows'     => $tableRows,
+            'currentPage'   => $page,
+            'totalPages'    => $totalPages,
+            'showingFrom'   => $showingFrom,
+            'showingTo'     => $showingTo,
+            'totalRows'     => $totalRows,
         ]);
     }
 }
