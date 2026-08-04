@@ -4,21 +4,19 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-/**
- * Model untuk tabel `expenses` (pengeluaran dana dari program donasi).
- */
 class ExpenseModel extends Model
 {
     protected $table            = 'expenses';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
+    protected $useSoftDeletes   = false;
+    protected $protectFields    = true;
     protected $allowedFields    = [
         'donationpost_id',
         'beneficiary', // ⬅️ added — was missing, form data was being silently dropped
         'amount',
-        'beneficiary',
-        'status', // pending | approved | paid | rejected
+        'status'
     ];
 
     protected bool $allowEmptyInserts = false;

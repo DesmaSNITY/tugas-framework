@@ -2,7 +2,7 @@
 
 <?= $this->section('styles') ?>
   .fade-banner{height:110px; background:linear-gradient(180deg, #ee5a94 0%, #f7bcd2 55%, #ffffff 100%);}
-  .about{max-width:1200px; margin:0 auto; display:grid; grid-template-columns:0.95fr 1.05fr; gap:50px; padding:50px 56px 80px 56px; align-items:start;}
+  .about{display:grid; grid-template-columns:0.95fr 1.05fr; gap:50px; padding:50px 56px 80px 56px; align-items:start;}
   .media{position:relative;}
   .photo-top{width:78%; aspect-ratio:4/3; border-radius:14px; background:linear-gradient(135deg,#e9c9a3,#c98f5b); position:relative; overflow:hidden; box-shadow:0 14px 30px rgba(0,0,0,0.18);}
   .photo-top .box{position:absolute; bottom:14%; left:50%; transform:translateX(-50%); width:58%; background:#c9995f; border-radius:4px; padding:10px 8px; text-align:center; box-shadow:0 8px 16px rgba(0,0,0,0.2);}

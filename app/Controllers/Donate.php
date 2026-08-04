@@ -2,78 +2,67 @@
 
 namespace App\Controllers;
 
-use App\Models\DonationPostModel;
-use App\Models\TransactionModel;
-use CodeIgniter\Exceptions\PageNotFoundException;
+use App\Models\ProgramModel;
+use App\Models\DonationModel;
 
 class Donate extends BaseController
 {
-    protected DonationPostModel $postModel;
-    protected TransactionModel $transactionModel;
+    protected ProgramModel $programModel;
+    protected DonationModel $donationModel;
 
     public function __construct()
     {
-        $this->postModel        = new DonationPostModel();
-        $this->transactionModel = new TransactionModel();
+        $this->programModel  = new ProgramModel();
+        $this->donationModel = new DonationModel();
     }
 
     /**
-     * Halaman listing "Program Donasi Terbaru" (dari tabel donationposts + foundations).
+     * Halaman listing "Program Donasi Terbaru".
      */
     public function index(): string
     {
-        $posts = $this->postModel->getActiveWithFoundation();
+        $programs = $this->programModel->getActivePrograms();
 
-        foreach ($posts as &$post) {
-            $post['progress']    = $this->postModel->progressPercentage($post);
-            $post['days_left']   = $this->postModel->daysLeft($post);
-            $post['donor_count'] = $this->transactionModel->donorCountForPost($post['id']);
+        foreach ($programs as &$program) {
+            $program['progress'] = $this->programModel->progressPercentage($program);
         }
 
         return view('donate/index', [
             'title'    => 'Mirae — Program Donasi',
-            'programs' => $posts,
+            'programs' => $programs,
         ]);
     }
 
     /**
-     * Halaman form "Donate Sekarang" (langkah 1). Wajib login karena
-     * tabel transactions butuh user_id (tidak ada kolom donatur tamu).
+     * Halaman form "Donate Sekarang" (langkah 1: Isi Donasi).
      */
-    public function checkout(int $postId): string
+    public function checkout(int $programId): string
     {
-        if (! session()->get('isLoggedIn')) {
-            return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu untuk berdonasi.');
+        $program = $this->programModel->find($programId);
+
+        if (! $program) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        $post = $this->postModel->findWithFoundation($postId);
-
-        if (! $post) {
-            throw PageNotFoundException::forPageNotFound();
-        }
-
-        $post['progress'] = $this->postModel->progressPercentage($post);
+        $program['progress'] = $this->programModel->progressPercentage($program);
 
         return view('donate/checkout', [
             'title'   => 'Mirae — Donate Sekarang',
-            'program' => $post,
+            'program' => $program,
         ]);
     }
 
     /**
-     * Simpan donasi ke tabel transactions (status masih "pending").
+     * Simpan data donasi (langkah 1 -> 2), status masih "pending".
      */
     public function store()
     {
-        $userId = session()->get('user_id');
-
-        if (! $userId) {
-            return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu untuk berdonasi.');
-        }
-
         $rules = [
-            'donationpost_id' => 'required|numeric',
-            'amount'          => 'required|numeric|greater_than[0]',
+            'program_id'  => 'required|numeric',
+            'donor_name'  => 'required|min_length[3]',
+            'donor_email' => 'required|valid_email',
+            'donor_phone' => 'required|min_length[8]',
+            'amount'      => 'required|numeric|greater_than[0]',
         ];
 
         if (! $this->validate($rules)) {
@@ -82,95 +71,77 @@ class Donate extends BaseController
                               ->with('errors', $this->validator->getErrors());
         }
 
-        $transactionId = $this->transactionModel->insert([
-            'user_id'         => $userId,
-            'donationpost_id' => $this->request->getPost('donationpost_id'),
-            'amount'          => $this->request->getPost('amount'),
-            'message'         => $this->request->getPost('message'),
-            'status'          => 'pending',
+        $donationId = $this->donationModel->insert([
+            'program_id'  => $this->request->getPost('program_id'),
+            'donor_name'  => $this->request->getPost('donor_name'),
+            'donor_email' => $this->request->getPost('donor_email'),
+            'donor_phone' => $this->request->getPost('donor_phone'),
+            'donor_city'  => $this->request->getPost('donor_city'),
+            'amount'      => $this->request->getPost('amount'),
+            'admin_fee'   => 0,
+            'message'     => $this->request->getPost('message'),
+            'show_name'   => $this->request->getPost('show_name') ? 1 : 0,
+            'status'      => 'pending',
         ]);
 
-        return redirect()->to('/donate/confirm/' . $transactionId);
+        return redirect()->to('/donate/confirm/' . $donationId);
     }
 
     /**
-     * Halaman konfirmasi & pilih metode pembayaran (langkah 2).
+     * Halaman konfirmasi & pilih metode pembayaran (langkah 2 -> 3).
      */
-    public function confirm(int $transactionId): string
+    public function confirm(int $donationId): string
     {
-        $transaction = $this->transactionModel->find($transactionId);
+        $donation = $this->donationModel->find($donationId);
 
-        if (! $transaction || (int) $transaction['user_id'] !== (int) session()->get('user_id')) {
-            throw PageNotFoundException::forPageNotFound();
+        if (! $donation) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        $post = $this->postModel->findWithFoundation($transaction['donationpost_id']);
+        $program = $this->programModel->find($donation['program_id']);
 
         return view('donate/confirm', [
             'title'    => 'Mirae — Konfirmasi Donasi',
-            'donation' => $transaction,
-            'program'  => $post,
+            'donation' => $donation,
+            'program'  => $program,
         ]);
     }
 
     /**
-     * Proses pembayaran: update status transaksi & tambah current_amount program.
+     * Proses pembayaran: update status donasi & saldo program.
      */
-    public function pay(int $transactionId)
+    public function pay(int $donationId)
     {
-        $transaction = $this->transactionModel->find($transactionId);
+        $donation = $this->donationModel->find($donationId);
 
-        if (! $transaction || (int) $transaction['user_id'] !== (int) session()->get('user_id')) {
-            throw PageNotFoundException::forPageNotFound();
+        if (! $donation) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
         $method = $this->request->getPost('payment_method');
 
-        $this->transactionModel->update($transactionId, [
+        $this->donationModel->update($donationId, [
             'payment_method' => $method,
             'status'         => 'paid',
         ]);
 
-        $post = $this->postModel->find($transaction['donationpost_id']);
-        $this->postModel->update($post['id'], [
-            'current_amount' => $post['current_amount'] + $transaction['amount'],
+        // update saldo terkumpul & jumlah donatur pada program terkait
+        $program = $this->programModel->find($donation['program_id']);
+        $this->programModel->update($program['id'], [
+            'collected_amount' => $program['collected_amount'] + $donation['amount'],
+            'donor_count'      => $program['donor_count'] + 1,
         ]);
 
-        return redirect()->to('/donate/success/' . $transactionId);
+        return redirect()->to('/donate/success/' . $donationId);
     }
 
-    public function success(int $transactionId): string
+    public function success(int $donationId): string
     {
-        $transaction = $this->transactionModel->find($transactionId);
-
-        if (! $transaction || (int) $transaction['user_id'] !== (int) session()->get('user_id')) {
-            throw PageNotFoundException::forPageNotFound();
-        }
+        $donation = $this->donationModel->find($donationId);
 
         return view('donate/success', [
             'title'    => 'Mirae — Donasi Berhasil',
-            'donation' => $transaction,
-        ]);
-    }
-
-    /**
-     * Halaman "Donasi Saya" — riwayat donasi milik user yang sedang login.
-     */
-    public function history(): string
-    {
-        $userId = session()->get('user_id');
-
-        $history = $this->transactionModel->historyForUser($userId);
-
-        $totalDonated = array_sum(array_map(
-            static fn ($item) => $item['status'] === 'paid' ? $item['amount'] : 0,
-            $history
-        ));
-
-        return view('donate/history', [
-            'title'        => 'Mirae — Donasi Saya',
-            'history'      => $history,
-            'totalDonated' => $totalDonated,
+            'donation' => $donation,
         ]);
     }
 }

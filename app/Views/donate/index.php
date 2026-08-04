@@ -40,23 +40,19 @@
       <?php foreach ($programs as $program): ?>
         <div class="card">
           <div class="card-img">
-            <?php if (! empty($program['picture'])): ?>
-              <img src="<?= esc($program['picture']) ?>" alt="<?= esc($program['title']) ?>" style="width:100%; height:100%; object-fit:cover;">
-            <?php else: ?>
-              <svg class="figure" viewBox="0 0 100 100" preserveAspectRatio="xMidYMax slice">
-                <circle cx="35" cy="30" r="14" fill="#f2d9c7"/>
-                <rect x="15" y="42" width="40" height="45" rx="8" fill="#e7e7ea"/>
-                <circle cx="70" cy="55" r="12" fill="#8a5a3c"/>
-                <rect x="58" y="65" width="24" height="30" rx="7" fill="#f4f1ec"/>
-              </svg>
-            <?php endif; ?>
+            <svg class="figure" viewBox="0 0 100 100" preserveAspectRatio="xMidYMax slice">
+              <circle cx="35" cy="30" r="14" fill="#f2d9c7"/>
+              <rect x="15" y="42" width="40" height="45" rx="8" fill="#e7e7ea"/>
+              <circle cx="70" cy="55" r="12" fill="#8a5a3c"/>
+              <rect x="58" y="65" width="24" height="30" rx="7" fill="#f4f1ec"/>
+            </svg>
             <div class="progress-pill">
-              Rp<?= number_format($program['current_amount'], 0, ',', '.') ?> terkumpul dari Rp<?= number_format($program['target_amount'], 0, ',', '.') ?>
+              Rp<?= number_format($program['collected_amount'], 0, ',', '.') ?> terkumpul dari Rp<?= number_format($program['target_amount'], 0, ',', '.') ?>
             </div>
           </div>
           <div class="card-body">
             <h3><?= esc($program['title']) ?></h3>
-            <span class="tag-category"><?= esc($program['foundation_name'] ?? 'Yayasan') ?></span>
+            <span class="tag-category"><?= esc($program['category']) ?></span>
             <p class="desc"><?= esc($program['description']) ?></p>
             <div class="meta-row">
               <span>👥 <?= (int) $program['donor_count'] ?> Donatur</span>

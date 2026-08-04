@@ -2,7 +2,7 @@
 
 <?= $this->section('styles') ?>
   .checkout-bg{background:linear-gradient(180deg, #e0407a 0%, #f299bc 55%, #ffd6e6 100%); padding:40px 48px 70px 48px;}
-  .checkout-row{max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1.7fr 1fr; gap:24px; align-items:start;}
+  .checkout-row{display:grid; grid-template-columns:1.7fr 1fr; gap:24px; align-items:start;}
   .form-card, .sidebar-card{background:#ffffff; border-radius:16px; box-shadow:0 20px 40px rgba(120,10,55,0.25); padding:24px 26px;}
   .summary-row{display:flex; justify-content:space-between; font-size:12.5px; color:var(--muted); margin-bottom:10px;}
   .summary-row .amount{color:var(--pink-deep); font-weight:700;}
@@ -42,15 +42,19 @@
 
       <div class="summary-row">
         <span>Nama Donatur</span>
-        <span><?= esc(session()->get('user_name') ?: '-') ?></span>
+        <span><?= esc($donation['donor_name']) ?></span>
       </div>
       <div class="summary-row">
         <span>Nominal donasi</span>
         <span class="amount">Rp<?= number_format($donation['amount'], 0, ',', '.') ?></span>
       </div>
+      <div class="summary-row">
+        <span>Biaya admin</span>
+        <span>Rp<?= number_format($donation['admin_fee'], 0, ',', '.') ?></span>
+      </div>
       <div class="summary-total">
         <span>Total Donasi</span>
-        <span class="amount">Rp<?= number_format($donation['amount'], 0, ',', '.') ?></span>
+        <span class="amount">Rp<?= number_format($donation['amount'] + $donation['admin_fee'], 0, ',', '.') ?></span>
       </div>
     </div>
 
