@@ -14,7 +14,7 @@
 <section class="success-bg">
   <div class="success-card">
     <div class="icon">🎉</div>
-    <h1>Terima Kasih, <?= esc($donation['donor_name']) ?>!</h1>
+    <h1>Terima Kasih, <?= esc(session()->get('user_name') ?: 'Donatur') ?>!</h1>
     <p>Donasi anda sebesar <b>Rp<?= number_format($donation['amount'], 0, ',', '.') ?></b> telah berhasil diproses. Semoga kebaikan ini membawa manfaat bagi yang membutuhkan.</p>
     <a href="<?= site_url('donate') ?>" class="btn-back">Lihat Program Lainnya</a>
   </div>

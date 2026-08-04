@@ -4,14 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
+/**
+ * Model untuk tabel `donationposts` (program donasi).
+ */
 class DonationPostModel extends Model
 {
     protected $table            = 'donationposts';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
-    protected $protectFields    = true;
     protected $allowedFields    = [
         'foundation_id',
         'title',

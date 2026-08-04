@@ -6,13 +6,6 @@ use App\Models\UserModel;
 
 class Auth extends BaseController
 {
-    protected UserModel $userModel;
-
-    public function __construct()
-    {
-        $this->userModel = new UserModel();
-    }
-
     // ==================== LOGIN ====================
 
     public function login(): string
@@ -38,7 +31,8 @@ class Auth extends BaseController
         $email    = $this->request->getPost('email');
         $password = $this->request->getPost('password');
 
-        $user = $this->userModel->findByEmail($email);
+        $userModel = new UserModel();
+        $user      = $userModel->findByEmail($email);
 
         if (! $user || ! password_verify($password, $user['password'])) {
             return redirect()->back()
@@ -80,7 +74,8 @@ class Auth extends BaseController
                               ->with('errors', $this->validator->getErrors());
         }
 
-        $this->userModel->insert([
+        $userModel = new UserModel();
+        $userModel->insert([
             'first_name' => $this->request->getPost('first_name'),
             'last_name'  => $this->request->getPost('last_name'),
             'email'      => $this->request->getPost('email'),
