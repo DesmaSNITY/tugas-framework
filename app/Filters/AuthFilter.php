@@ -8,18 +8,17 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class AuthFilter implements FilterInterface
 {
-    /**
-     * Cek apakah user sudah login sebelum mengakses halaman dashboard.
-     */
     public function before(RequestInterface $request, $arguments = null)
     {
-        if (! session()->get('isLoggedIn')) {
-            return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu.');
+        // Jika menggunakan CodeIgniter Shield
+        if (! auth()->loggedIn()) {
+            return redirect()->to('/login')
+                ->with('error', 'Silakan login terlebih dahulu.');
         }
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // tidak ada proses tambahan setelah request
+        // Tidak ada proses setelah request
     }
 }

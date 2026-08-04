@@ -1,25 +1,373 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('styles') ?>
-  .listing{background:linear-gradient(180deg, #ffe0ea 0%, #f78bb0 35%, #e0407a 75%, #c72868 100%); padding:56px 48px 80px 48px; text-align:center;}
-  .listing h1{font-family:Georgia, 'Times New Roman', serif; font-size:32px; font-weight:700; color:var(--ink);}
-  .listing h1 span{color:var(--purple-dark);}
-  .listing .subtitle{font-size:13.5px; color:#5c4550; margin-top:8px; margin-bottom:34px;}
-  .filter-row{display:flex; justify-content:flex-end; max-width:1080px; margin:0 auto 22px auto;}
-  .filter-btn{display:inline-flex; align-items:center; gap:8px; background:linear-gradient(90deg,#f186ad,#8b7cd6); color:#fff; font-weight:700; font-size:13.5px; padding:10px 20px; border-radius:24px; border:none; cursor:pointer;}
-  .cards{max-width:1080px; margin:0 auto; display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; text-align:left;}
-  .card{background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 16px 30px rgba(120,10,55,0.18);}
-  .card-img{position:relative; height:150px; background:linear-gradient(135deg,#f2b6b0,#c96a72); overflow:hidden;}
-  .card-img .figure{position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:70%; height:80%;}
-  .card-img .progress-pill{position:absolute; top:8px; left:8px; right:8px; background:rgba(255,255,255,0.92); border-radius:20px; padding:5px 10px; font-size:9.5px; font-weight:700; color:var(--ink);}
-  .card-body{padding:16px 18px 18px 18px;}
-  .card-body h3{font-size:15px; color:var(--ink); line-height:1.35; margin-bottom:4px;}
-  .tag-category{font-size:12px; color:var(--pink-light); font-weight:700; margin-bottom:8px; display:block;}
-  .card-body .desc{font-size:11.5px; color:var(--muted); line-height:1.6; margin-bottom:14px;}
-  .meta-row{display:flex; gap:16px; font-size:10.5px; color:var(--muted); margin-bottom:16px;}
-  .btn-donasi{display:inline-flex; align-items:center; gap:8px; background:linear-gradient(90deg,#9f8de0,var(--purple-dark)); color:#fff; font-weight:700; font-size:12.5px; padding:9px 16px; border-radius:20px; text-decoration:none;}
-  @media (max-width:900px){.cards{grid-template-columns:1fr 1fr;}}
-  @media (max-width:820px){.cards{grid-template-columns:1fr;}}
+ .listing{
+    background:linear-gradient(180deg,#ffe0ea 0%,#f78bb0 35%,#e0407a 75%,#c72868 100%);
+    padding:60px 50px 80px;
+    text-align:center;
+}
+
+.listing h1{
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:38px;
+    font-weight:700;
+    color:#2c2c2c;
+    margin-bottom:10px;
+}
+
+.listing h1 span{
+    color:#8b6ad9;
+}
+
+.listing .subtitle{
+    font-size:15px;
+    color:#5c4550;
+    margin-bottom:35px;
+}
+
+.filter-row{
+    display:flex;
+    justify-content:flex-end;
+    max-width:1200px;
+    margin:0 auto 25px;
+}
+
+.filter-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 20px;
+    border:none;
+    border-radius:25px;
+    background:linear-gradient(90deg,#f38fb6,#8c7bda);
+    color:#fff;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.cards{
+    max-width:1200px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:28px;
+}
+
+.card{
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 15px 35px rgba(0,0,0,.15);
+
+    display:flex;
+    flex-direction:column;
+
+    height:100%;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.card-img{
+    position:relative;
+    width:100%;
+    height:240px;
+    overflow:hidden;
+}
+
+.card-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+.progress-pill{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    background:#fff;
+    padding:10px 15px;
+    font-size:13px;
+    font-weight:600;
+    color:#444;
+    border-top:4px solid #9c7de4;
+}
+
+.progress-percent{
+    position:absolute;
+    right:15px;
+    bottom:12px;
+    background:#7fd0ff;
+    color:#fff;
+    font-size:12px;
+    font-weight:bold;
+    padding:3px 10px;
+    border-radius:20px;
+}
+
+.card-body{
+    padding:22px;
+
+    display:flex;
+    flex-direction:column;
+
+    flex:1;
+}
+
+.card-body h3{
+
+    font-size:18px;
+    font-weight:700;
+
+    line-height:1.4;
+
+    min-height:100px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    text-align:center;
+
+    margin-bottom:8px;
+}
+
+.tag-category{
+    display:block;
+    color:#1ba3ff;
+    font-size:24px;
+    font-weight:600;
+    margin-bottom:18px;
+}
+
+.card-body .desc{
+    color:#666;
+    font-size:15px;
+    line-height:1.7;
+    min-height:70px;
+    margin-bottom:22px;
+}
+
+.meta-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-top:auto;
+
+    margin-bottom:18px;
+}
+
+.meta-row span{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.btn-donasi{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:12px 28px;
+    border-radius:12px;
+    background:linear-gradient(90deg,#9f8de0,#8367db);
+    color:#fff;
+    text-decoration:none;
+    font-weight:600;
+    transition:.3s;
+}
+
+.btn-donasi:hover{
+    opacity:.9;
+    transform:scale(1.03);
+}
+
+@media(max-width:1100px){
+
+    .cards{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:768px){
+
+    .listing{
+        padding:40px 20px;
+    }
+
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .card-img{
+        height:220px;
+    }
+
+    .card-body h3{
+        font-size:24px;
+    }
+
+    .tag-category{
+        font-size:18px;
+    }
+
+}
+.filter-row{
+    display:flex;
+    justify-content:flex-end;
+    max-width:1200px;
+    margin:0 auto 35px;
+}
+
+.filter-dropdown{
+    position:relative;
+}
+
+.filter-btn{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    padding:14px 22px;
+
+    border:none;
+    outline:none;
+
+    border-radius:50px;
+
+    background:linear-gradient(135deg,#f58fb4,#8d7be6);
+
+    color:#fff;
+
+    font-size:15px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+    box-shadow:0 12px 25px rgba(143,90,205,.30);
+}
+
+.filter-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 18px 35px rgba(143,90,205,.45);
+
+}
+
+.filter-btn i:last-child{
+
+    transition:.3s;
+
+}
+
+.filter-dropdown:hover .filter-btn i:last-child{
+
+    transform:rotate(180deg);
+
+}
+
+.filter-menu{
+
+    position:absolute;
+
+    right:0;
+    top:115%;
+
+    width:270px;
+
+    background:rgba(255,255,255,.96);
+
+    backdrop-filter:blur(14px);
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:0 20px 45px rgba(0,0,0,.18);
+
+    opacity:0;
+    visibility:hidden;
+
+    transform:translateY(15px);
+
+    transition:.25s;
+
+    z-index:999;
+
+}
+
+.filter-dropdown:hover .filter-menu{
+
+    opacity:1;
+
+    visibility:visible;
+
+    transform:translateY(0);
+
+}
+
+.filter-menu a{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:16px 20px;
+
+    text-decoration:none;
+
+    color:#555;
+
+    font-size:15px;
+
+    transition:.25s;
+
+}
+
+.filter-menu a:not(:last-child){
+
+    border-bottom:1px solid #f2f2f2;
+
+}
+
+.filter-menu a:hover{
+
+    background:#f7f4ff;
+
+    color:#8b67df;
+
+    padding-left:28px;
+
+}
+
+.filter-menu a.active{
+
+    background:linear-gradient(90deg,#f58fb4,#8b6bdf);
+
+    color:#fff;
+
+    font-weight:700;
+
+}
+
+.filter-menu a.active:hover{
+
+    padding-left:20px;
+
+}
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
@@ -29,7 +377,45 @@
     <p class="subtitle">Mari bersama wujudkan kebaikan untuk yang membutuhkan</p>
 
     <div class="filter-row">
-        <button class="filter-btn">Filter ▾</button>
+       <div class="filter-dropdown">
+
+        <button class="filter-btn">
+            <i class="fa-solid fa-filter"></i>
+            Filter Program
+            <i class="fa-solid fa-chevron-down"></i>
+        </button>
+
+        <div class="filter-menu">
+
+            <a href="<?= site_url('donate') ?>"
+               class="<?= empty($selectedCategory) ? 'active' : '' ?>">
+                🌍 Semua Program
+            </a>
+
+            <a href="<?= site_url('donate?category=Medis') ?>"
+               class="<?= ($selectedCategory=='Medis')?'active':'' ?>">
+                🏥 Donasi Kesehatan
+            </a>
+
+            <a href="<?= site_url('donate?category=Pendidikan') ?>"
+               class="<?= ($selectedCategory=='Pendidikan')?'active':'' ?>">
+                📚 Donasi Pendidikan
+            </a>
+
+            <a href="<?= site_url('donate?category=Bencana') ?>"
+               class="<?= ($selectedCategory=='Bencana')?'active':'' ?>">
+                🌊 Bencana Alam
+            </a>
+
+            <a href="<?= site_url('donate?category=Panti Asuhan') ?>"
+               class="<?= ($selectedCategory=='Panti Asuhan')?'active':'' ?>">
+                🏡 Panti Asuhan
+            </a>
+
+        </div>
+
+    </div>
+
     </div>
 
     <div class="cards">
@@ -40,15 +426,20 @@
       <?php foreach ($programs as $program): ?>
         <div class="card">
           <div class="card-img">
-            <svg class="figure" viewBox="0 0 100 100" preserveAspectRatio="xMidYMax slice">
-              <circle cx="35" cy="30" r="14" fill="#f2d9c7"/>
-              <rect x="15" y="42" width="40" height="45" rx="8" fill="#e7e7ea"/>
-              <circle cx="70" cy="55" r="12" fill="#8a5a3c"/>
-              <rect x="58" y="65" width="24" height="30" rx="7" fill="#f4f1ec"/>
-            </svg>
+            <img src="<?= base_url('uploads/programs/' . $program['image']) ?>"
+         alt="<?= esc($program['title']) ?>">
             <div class="progress-pill">
-              Rp<?= number_format($program['collected_amount'], 0, ',', '.') ?> terkumpul dari Rp<?= number_format($program['target_amount'], 0, ',', '.') ?>
+                <strong>
+            Rp<?= number_format($program['collected_amount'],0,',','.') ?>
+        </strong>
+        terkumpul dari
+        <strong>
+            Rp<?= number_format($program['target_amount'],0,',','.') ?>
+        </strong>
             </div>
+                <div class="progress-percent">
+        <?= $program['progress'] ?>%
+    </div>
           </div>
           <div class="card-body">
             <h3><?= esc($program['title']) ?></h3>

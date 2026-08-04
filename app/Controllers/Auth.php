@@ -3,65 +3,47 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use CodeIgniter\Shield\Entities\User;
 
 class Auth extends BaseController
 {
-    protected UserModel $userModel;
-
-    public function __construct()
-    {
-        $this->userModel = new UserModel();
-    }
-
-    // ==================== LOGIN ====================
-
-    public function login(): string
+    public function login()
     {
         return view('auth/login', [
-            'title' => 'Mirae — Login',
+            'title' => 'Login',
+            'body_class' => 'auth-login-page'
         ]);
     }
 
     public function attemptLogin()
-    {
-        $rules = [
-            'email'    => 'required|valid_email',
-            'password' => 'required',
-        ];
+{
+    $credentials = [
+        'email'    => $this->request->getPost('email'),
+        'password' => $this->request->getPost('password'),
+    ];
 
-        if (! $this->validate($rules)) {
-            return redirect()->back()
-                              ->withInput()
-                              ->with('errors', $this->validator->getErrors());
-        }
+    $auth = auth('session');
 
-        $email    = $this->request->getPost('email');
-        $password = $this->request->getPost('password');
-
-        $user = $this->userModel->findByEmail($email);
-
-        if (! $user || ! password_verify($password, $user['password'])) {
-            return redirect()->back()
-                              ->withInput()
-                              ->with('error', 'Email atau password salah.');
-        }
-
-        session()->set([
-            'user_id'     => $user['id'],
-            'user_name'   => $user['first_name'],
-            'user_email'  => $user['email'],
-            'isLoggedIn'  => true,
-        ]);
-
-        return redirect()->to('/dashboard/laporan');
+    // kalau sudah login, logout dulu
+    if ($auth->loggedIn()) {
+        $auth->logout();
     }
 
-    // ==================== REGISTER ====================
+    $result = $auth->attempt($credentials);
 
-    public function register(): string
+    if (! $result->isOK()) {
+        return redirect()->back()
+            ->withInput()
+            ->with('error', $result->reason());
+    }
+
+    return redirect()->to('/');
+}
+
+    public function register()
     {
         return view('auth/register', [
-            'title' => 'Mirae — Create An Account',
+            'title' => 'Register'
         ]);
     }
 
@@ -69,33 +51,42 @@ class Auth extends BaseController
     {
         $rules = [
             'first_name' => 'required|min_length[2]',
-            'email'      => 'required|valid_email|is_unique[users.email]',
-            'password'   => 'required|min_length[6]',
-            'agree'      => 'required',
+            'last_name'  => 'permit_empty',
+            'email'      => 'required|valid_email|is_unique[auth_identities.secret]',
+            'password'   => 'required|min_length[8]',
         ];
 
         if (! $this->validate($rules)) {
             return redirect()->back()
-                              ->withInput()
-                              ->with('errors', $this->validator->getErrors());
+                ->withInput()
+                ->with('error', implode('<br>', $this->validator->getErrors()));
         }
 
-        $this->userModel->insert([
+        $users = model(UserModel::class);
+
+        $user = new User([
+            'username'   => explode('@', $this->request->getPost('email'))[0],
             'first_name' => $this->request->getPost('first_name'),
             'last_name'  => $this->request->getPost('last_name'),
-            'email'      => $this->request->getPost('email'),
-            'password'   => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+            'active'     => 1,
+        ]);
+
+        $users->save($user);
+
+        $user = $users->findById($users->getInsertID());
+
+        $user->createEmailIdentity([
+            'email'    => $this->request->getPost('email'),
+            'password' => $this->request->getPost('password'),
         ]);
 
         return redirect()->to('/login')
-                          ->with('success', 'Akun berhasil dibuat, silakan login.');
+            ->with('success', 'Akun berhasil dibuat.');
     }
-
-    // ==================== LOGOUT ====================
 
     public function logout()
     {
-        session()->destroy();
+        auth()->logout();
 
         return redirect()->to('/login');
     }

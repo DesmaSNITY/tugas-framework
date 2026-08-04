@@ -4,13 +4,22 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
+
 class ProgramModel extends Model
 {
-    protected $table            = 'programs';
-    protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true;
-    protected $returnType       = 'array';
-    protected $allowedFields    = [
+
+    protected $table = 'programs';
+
+
+    protected $primaryKey = 'id';
+
+
+    protected $returnType = 'array';
+
+
+
+    protected $allowedFields = [
+
         'title',
         'category',
         'description',
@@ -20,33 +29,63 @@ class ProgramModel extends Model
         'donor_count',
         'days_left',
         'is_active',
+        'image'
+
     ];
 
-    protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
 
-    /**
-     * Ambil semua program yang masih aktif, untuk halaman listing donasi.
-     */
-    public function getActivePrograms(): array
+
+    protected $useTimestamps = true;
+
+
+    protected $createdField='created_at';
+
+
+    protected $updatedField='updated_at';
+
+
+
+    // ==========================
+    // UNTUK HALAMAN DONATE
+    // ==========================
+
+
+    public function getActivePrograms()
     {
-        return $this->where('is_active', 1)
-                     ->orderBy('created_at', 'DESC')
-                     ->findAll();
+
+        return $this
+            ->where('is_active',1)
+            ->findAll();
+
     }
 
-    /**
-     * Hitung persentase progres dana terkumpul terhadap target.
-     */
-    public function progressPercentage(array $program): float
+
+
+    public function progressPercentage($program)
     {
-        if ((float) $program['target_amount'] <= 0) {
+
+        if(
+            empty($program['target_amount']) ||
+            $program['target_amount'] <= 0
+        ){
+
             return 0;
+
         }
 
-        $percentage = ((float) $program['collected_amount'] / (float) $program['target_amount']) * 100;
 
-        return min(100, round($percentage, 1));
+        return round(
+
+            (
+                $program['collected_amount']
+                /
+                $program['target_amount']
+            )
+            *100
+
+        );
+
     }
+
+
 }

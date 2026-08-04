@@ -24,7 +24,15 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
+<?php
 
+$totalIncome = $totalIncome ?? 0;
+$totalPrograms = $totalPrograms ?? 0;
+$totalTarget = $totalTarget ?? 0;
+$donorCount = $donorCount ?? 0;
+$chartData = $chartData ?? [];
+
+?>
 <section class="dashboard">
     <h1>Laporan Donasi</h1>
     <p class="subtitle">Ringkasan pemasukan dan pengeluaran dana donasi</p>
@@ -32,15 +40,15 @@
     <div class="stat-row">
       <div class="stat">
         <div class="icon icon-pink">💳</div>
-        <div><div class="label">Total Pemasukan</div><div class="value">Rp<?= number_format($totalIncome, 0, ',', '.') ?></div></div>
+        <div><div class="label">Total Pemasukan</div><div class="value">Rp<?= number_format($totalIncome ?? 0, 0, ',', '.') ?></div></div>
       </div>
       <div class="stat">
         <div class="icon icon-orange">📦</div>
-        <div><div class="label">Total Program Aktif</div><div class="value"><?= (int) $totalPrograms ?> Program</div></div>
+        <div><div class="label">Total Program Aktif</div><div class="value"><?= (int) ($totalPrograms ?? 0) ?> Program</div></div>
       </div>
       <div class="stat">
         <div class="icon icon-blue">🧑‍🤝‍🧑</div>
-        <div><div class="label">Total Donatur</div><div class="value"><?= (int) $donorCount ?> Orang</div></div>
+        <div><div class="label">Total Donatur</div><div class="value"><?= (int) ($donorCount ?? 0) ?> Orang</div></div>
       </div>
     </div>
 
@@ -68,11 +76,12 @@
         <h2>Ringkasan</h2>
         <div class="summary-item">
           <div class="icon" style="background:#e9e2fb; color:var(--purple);">📥</div>
-          <div><div class="label">Total Pemasukan</div><div class="value">Rp<?= number_format($totalIncome, 0, ',', '.') ?></div></div>
+          <div><div class="label">Total Pemasukan</div><div class="value">Rp<?= number_format($totalIncome ?? 0, 0, ',', '.') ?></div>
         </div>
         <div class="summary-item">
           <div class="icon icon-pink">💳</div>
-          <div><div class="label">Total Target Program</div><div class="value">Rp<?= number_format($totalTarget, 0, ',', '.') ?></div></div>
+          <div><div class="label">Total Target Program</div><div class="value">Rp<?= number_format($totalTarget ?? 0,0,',','.') ?>
+</div></div>
         </div>
         <div class="summary-item">
           <div class="icon" style="background:#fdf0c9; color:#d9a520;">🧑‍🤝‍🧑</div>

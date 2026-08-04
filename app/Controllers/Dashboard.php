@@ -3,38 +3,165 @@
 namespace App\Controllers;
 
 use App\Models\DonationModel;
+use App\Models\ExpenseModel;
 use App\Models\ProgramModel;
+
 
 class Dashboard extends BaseController
 {
-    public function laporan(): string
+
+    protected $donationModel;
+    protected $expenseModel;
+    protected $programModel;
+
+
+    public function __construct()
     {
-        $donationModel = new DonationModel();
-        $programModel  = new ProgramModel();
+        $this->donationModel = new DonationModel();
+        $this->expenseModel = new ExpenseModel();
+        $this->programModel = new ProgramModel();
+    }
 
-        $totalIncome   = $donationModel->totalIncome();
-        $totalPrograms = $programModel->where('is_active', 1)->countAllResults();
-        $totalTarget   = (float) ($programModel->selectSum('target_amount')->first()['target_amount'] ?? 0);
-        $donorCount    = $donationModel->donorCount();
 
-        $monthly = $donationModel->monthlyIncome((int) date('Y'));
 
-        // susun data 12 bulan agar grafik tetap lengkap walau datanya kosong
-        $monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-        $chartData  = [];
-        foreach ($monthNames as $i => $name) {
-            $monthNumber      = $i + 1;
-            $found            = array_filter($monthly, static fn ($row) => (int) $row['month'] === $monthNumber);
-            $chartData[$name] = $found ? array_sum(array_column($found, 'total')) : 0;
+    public function laporan()
+    {
+
+
+        // TOTAL DONASI
+
+        $income = $this->donationModel
+            ->where('status','paid')
+            ->selectSum('amount')
+            ->first();
+
+
+        $totalIncome = $income['amount'] ?? 0;
+
+
+
+        // TOTAL PENGELUARAN
+
+        $expense = $this->expenseModel
+            ->where('status','paid')
+            ->selectSum('amount')
+            ->first();
+
+
+        $totalExpense = $expense['amount'] ?? 0;
+
+
+
+        // SALDO
+
+        $saldo = $totalIncome - $totalExpense;
+
+
+
+        // TOTAL DONATUR
+
+        $donorCount = $this->donationModel
+            ->where('status','paid')
+            ->countAllResults();
+
+
+
+        // PROGRAM AKTIF
+
+        $totalPrograms = $this->programModel
+            ->where('is_active',1)
+            ->countAllResults();
+
+
+
+        // TARGET PROGRAM
+
+        $target = $this->programModel
+            ->selectSum('target_amount')
+            ->first();
+
+
+        $totalTarget = $target['target_amount'] ?? 0;
+
+
+
+        // DATA GRAFIK
+
+        $months = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'Mei',
+            'Jun',
+            'Jul',
+            'Agu',
+            'Sep',
+            'Okt',
+            'Nov',
+            'Des'
+        ];
+
+
+        $chartData=[];
+
+
+        foreach($months as $m)
+        {
+            $chartData[$m]=0;
         }
 
-        return view('dashboard/laporan', [
-            'title'         => 'Mirae — Laporan Donasi',
-            'totalIncome'   => $totalIncome,
-            'totalPrograms' => $totalPrograms,
-            'totalTarget'   => $totalTarget,
-            'donorCount'    => $donorCount,
-            'chartData'     => $chartData,
-        ]);
+
+
+        $donations = $this->donationModel
+            ->where('status','paid')
+            ->findAll();
+
+
+
+        foreach($donations as $d)
+        {
+
+            $month=date(
+                'M',
+                strtotime($d['created_at'])
+            );
+
+
+            if(isset($chartData[$month]))
+            {
+                $chartData[$month]+=$d['amount'];
+            }
+
+        }
+
+
+
+        return view(
+            'dashboard/laporan',
+            [
+
+                'title'=>'Laporan Donasi',
+
+                'totalIncome'=>$totalIncome,
+
+                'totalExpense'=>$totalExpense,
+
+                'saldo'=>$saldo,
+
+                'donorCount'=>$donorCount,
+
+                'totalPrograms'=>$totalPrograms,
+
+                'totalTarget'=>$totalTarget,
+
+                'chartData'=>$chartData
+
+            ]
+        );
+
+
     }
+
+
 }
