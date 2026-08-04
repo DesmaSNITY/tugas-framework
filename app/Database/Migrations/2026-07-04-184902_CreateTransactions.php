@@ -13,7 +13,8 @@ class CreateTransactions extends Migration
             'id'=>[
                 'type'=>'BIGINT',
                 'constraint'=>'20',
-                'unsigned'=>'true'
+                'unsigned'=>'true',
+                'auto_increment' => true,
 
             ],
             'user_id'=>[

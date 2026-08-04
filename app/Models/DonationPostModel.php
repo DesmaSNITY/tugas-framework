@@ -14,6 +14,7 @@ class DonationPostModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'foundation_id',
+        'user_id',   
         'title',
         'description',
         'deadline',
@@ -21,6 +22,7 @@ class DonationPostModel extends Model
         'current_amount',
         'status',
         'picture',
+        'category',  
     ];
 
     protected bool $allowEmptyInserts = false;
