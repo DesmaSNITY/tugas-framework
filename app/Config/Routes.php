@@ -20,6 +20,11 @@ $routes->get('/', 'Home::index');
 
 $routes->get('about', 'Home::about');
 
+$routes->post(
+    'profile/update',
+    'Profile::update',
+    ['filter' => 'auth']
+);
 
 // ==================== ADMIN OLD ROUTES ====================
 
@@ -249,64 +254,71 @@ $routes->group('admin', [
 
 // ==================== AUTH ====================
 
+$routes->get('login', 'Auth::login');
+$routes->post('login', 'Auth::attemptLogin');
 
-$routes->get('login','Auth::login');
+$routes->get('register', 'Auth::register');
+$routes->post('register', 'Auth::attemptRegister');
 
-$routes->post('login','Auth::attemptLogin');
-
-
-$routes->get('register','Auth::register');
-
-$routes->post('register','Auth::attemptRegister');
-
-
-$routes->get('logout','Auth::logout');
-
-
-
+$routes->post('logout', 'Auth::logout');
 
 // ==================== DONATE ====================
 
-
-$routes->get('donate','Donate::index');
+$routes->get('donate', 'Donate::index');
 
 $routes->get(
-    'donate/category/(:any)',
-    'Donate::category/$1'
+    'donate/history',
+    'Donate::history',
+    ['filter' => 'auth']
 );
-
 
 $routes->get(
     'donate/checkout/(:num)',
-    'Donate::checkout/$1'
+    'Donate::checkout/$1',
+    ['filter' => 'auth']
 );
-
 
 $routes->post(
     'donate/store',
-    'Donate::store'
+    'Donate::store',
+    ['filter' => 'auth']
 );
-
 
 $routes->get(
     'donate/confirm/(:num)',
-    'Donate::confirm/$1'
+    'Donate::confirm/$1',
+    ['filter' => 'auth']
 );
-
 
 $routes->post(
     'donate/pay/(:num)',
-    'Donate::pay/$1'
+    'Donate::pay/$1',
+    ['filter' => 'auth']
 );
 
+$routes->post(
+    'donate/expire/(:num)',
+    'Donate::expire/$1',
+    ['filter' => 'auth']
+);
 
 $routes->get(
     'donate/success/(:num)',
-    'Donate::success/$1'
+    'Donate::success/$1',
+    ['filter' => 'auth']
 );
 
+$routes->get(
+    'donate/failed/(:num)',
+    'Donate::failed/$1',
+    ['filter' => 'auth']
+);
 
-
+$routes->post(
+    'profile/update',
+    'Profile::update',
+    ['filter' => 'auth']
+);
 
 // ==================== DASHBOARD ====================
 

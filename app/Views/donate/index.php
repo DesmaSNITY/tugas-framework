@@ -1,459 +1,838 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('styles') ?>
- .listing{
-    background:linear-gradient(180deg,#ffe0ea 0%,#f78bb0 35%,#e0407a 75%,#c72868 100%);
-    padding:60px 50px 80px;
-    text-align:center;
+
+.donate-page {
+    min-height: 650px;
+    padding: 60px 50px 80px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffe0ea 0%,
+            #f78bb0 35%,
+            #e0407a 75%,
+            #c72868 100%
+        );
 }
 
-.listing h1{
-    font-family:Georgia,'Times New Roman',serif;
-    font-size:38px;
-    font-weight:700;
-    color:#2c2c2c;
-    margin-bottom:10px;
+.donate-page-header {
+    margin-bottom: 34px;
 }
 
-.listing h1 span{
-    color:#8b6ad9;
+.donate-page-header h1 {
+    margin-bottom: 10px;
+
+    color: #2c2c2c;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 38px;
+    font-weight: 700;
 }
 
-.listing .subtitle{
-    font-size:15px;
-    color:#5c4550;
-    margin-bottom:35px;
+.donate-page-header h1 span {
+    color: #8b6ad9;
 }
 
-.filter-row{
-    display:flex;
-    justify-content:flex-end;
-    max-width:1200px;
-    margin:0 auto 25px;
+.donate-page-header p {
+    color: #5c4550;
+
+    font-size: 15px;
 }
 
-.filter-btn{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:10px 20px;
-    border:none;
-    border-radius:25px;
-    background:linear-gradient(90deg,#f38fb6,#8c7bda);
-    color:#fff;
-    font-size:14px;
-    font-weight:600;
-    cursor:pointer;
+/* Filter */
+
+.donate-filter-row {
+    display: flex;
+    justify-content: flex-end;
+
+    max-width: 1200px;
+    margin: 0 auto 35px;
 }
 
-.cards{
-    max-width:1200px;
-    margin:auto;
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:28px;
+.donate-filter {
+    position: relative;
 }
 
-.card{
-    background:#fff;
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:0 15px 35px rgba(0,0,0,.15);
+.donate-filter::after {
+    content: "";
 
-    display:flex;
-    flex-direction:column;
+    position: absolute;
+    top: 100%;
+    right: 0;
 
-    height:100%;
+    width: 270px;
+    height: 15px;
 }
 
-.card:hover{
-    transform:translateY(-8px);
+.donate-filter-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 13px 21px;
+
+    border: none;
+    border-radius: 50px;
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f58fb4,
+            #8d7be6
+        );
+
+    box-shadow:
+        0 12px 25px rgba(143, 90, 205, 0.30);
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
 }
 
-.card-img{
-    position:relative;
-    width:100%;
-    height:240px;
-    overflow:hidden;
+.donate-filter-arrow {
+    transition: transform 0.25s ease;
 }
 
-.card-img img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
+.donate-filter:hover .donate-filter-arrow,
+.donate-filter:focus-within .donate-filter-arrow {
+    transform: rotate(180deg);
 }
 
-.progress-pill{
-    position:absolute;
-    left:0;
-    right:0;
-    bottom:0;
-    background:#fff;
-    padding:10px 15px;
-    font-size:13px;
-    font-weight:600;
-    color:#444;
-    border-top:4px solid #9c7de4;
+.donate-filter-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    z-index: 900;
+
+    width: 270px;
+
+    overflow: hidden;
+
+    border: 1px solid #eee1f5;
+    border-radius: 17px;
+
+    background: rgba(255, 255, 255, 0.98);
+
+    box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.18);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transform: translateY(14px);
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease,
+        transform 0.25s ease;
 }
 
-.progress-percent{
-    position:absolute;
-    right:15px;
-    bottom:12px;
-    background:#7fd0ff;
-    color:#fff;
-    font-size:12px;
-    font-weight:bold;
-    padding:3px 10px;
-    border-radius:20px;
+.donate-filter:hover .donate-filter-menu,
+.donate-filter:focus-within .donate-filter-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transform: translateY(0);
 }
 
-.card-body{
-    padding:22px;
+.donate-filter-menu a {
+    display: flex;
+    align-items: center;
+    gap: 11px;
 
-    display:flex;
-    flex-direction:column;
+    padding: 15px 19px;
 
-    flex:1;
+    color: #5f5260;
+
+    font-size: 14px;
+    text-decoration: none;
+    text-align: left;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        padding-left 0.2s ease;
 }
 
-.card-body h3{
-
-    font-size:18px;
-    font-weight:700;
-
-    line-height:1.4;
-
-    min-height:100px;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    text-align:center;
-
-    margin-bottom:8px;
+.donate-filter-menu a:not(:last-child) {
+    border-bottom: 1px solid #f1e8ee;
 }
 
-.tag-category{
-    display:block;
-    color:#1ba3ff;
-    font-size:24px;
-    font-weight:600;
-    margin-bottom:18px;
+.donate-filter-menu a:hover {
+    padding-left: 26px;
+
+    color: #7b5bd0;
+    background: #f8f4ff;
 }
 
-.card-body .desc{
-    color:#666;
-    font-size:15px;
-    line-height:1.7;
-    min-height:70px;
-    margin-bottom:22px;
+.donate-filter-menu a.active {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f58fb4,
+            #8b6bdf
+        );
+
+    font-weight: 800;
 }
 
-.meta-row{
+/* Alert */
 
-    display:flex;
+.donate-database-error {
+    max-width: 900px;
+    margin: 0 auto 30px;
+    padding: 16px 19px;
 
-    justify-content:space-between;
+    border: 1px solid #f2b8c3;
+    border-radius: 14px;
 
-    margin-top:auto;
+    color: #9d293b;
+    background: #fff0f3;
 
-    margin-bottom:18px;
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: left;
 }
 
-.meta-row span{
-    display:flex;
-    align-items:center;
-    gap:6px;
+/* Cards */
+
+.donate-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.btn-donasi{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    padding:12px 28px;
-    border-radius:12px;
-    background:linear-gradient(90deg,#9f8de0,#8367db);
-    color:#fff;
-    text-decoration:none;
-    font-weight:600;
-    transition:.3s;
+.donate-card {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.15);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
-.btn-donasi:hover{
-    opacity:.9;
-    transform:scale(1.03);
+.donate-card:hover {
+    box-shadow:
+        0 22px 45px rgba(0, 0, 0, 0.22);
+
+    transform: translateY(-8px);
 }
 
-@media(max-width:1100px){
+.donate-card-image {
+    position: relative;
 
-    .cards{
-        grid-template-columns:repeat(2,1fr);
+    width: 100%;
+    height: 240px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffd1e1,
+            #a594e4
+        );
+}
+
+.donate-card-image img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: transform 0.35s ease;
+}
+
+.donate-card:hover .donate-card-image img {
+    transform: scale(1.04);
+}
+
+.donate-image-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+
+    width: 100%;
+    height: 100%;
+
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.donate-image-empty i {
+    font-size: 44px;
+}
+
+.donate-image-empty span {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.donate-status {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    color: #ffffff;
+    background: rgba(44, 24, 40, 0.76);
+
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: capitalize;
+
+    backdrop-filter: blur(6px);
+}
+
+.donate-progress-info {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    padding: 10px 75px 10px 14px;
+
+    border-top: 4px solid #9c7de4;
+
+    color: #4d4148;
+    background: rgba(255, 255, 255, 0.96);
+
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.donate-progress-percent {
+    position: absolute;
+    right: 14px;
+    bottom: 13px;
+
+    min-width: 48px;
+    padding: 4px 9px;
+
+    border-radius: 20px;
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #66c6ff,
+            #8d7ce3
+        );
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.donate-card-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    padding: 22px;
+}
+
+.donate-foundation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    margin-bottom: 10px;
+
+    color: #8c7482;
+
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.donate-card-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 55px;
+    margin-bottom: 10px;
+
+    color: #2c1828;
+
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.donate-category {
+    display: inline-flex;
+    align-self: center;
+
+    margin-bottom: 17px;
+    padding: 6px 13px;
+
+    border-radius: 20px;
+
+    color: #227eaf;
+    background: #e3f5ff;
+
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.donate-description {
+    display: -webkit-box;
+
+    min-height: 70px;
+    margin-bottom: 20px;
+
+    overflow: hidden;
+
+    color: #6b5964;
+
+    font-size: 14px;
+    line-height: 1.65;
+    text-align: left;
+
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+.donate-location {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-bottom: 17px;
+
+    color: #84717b;
+
+    font-size: 12px;
+}
+
+.donate-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    margin-top: auto;
+    margin-bottom: 19px;
+
+    color: #6d5a65;
+
+    font-size: 12px;
+}
+
+.donate-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.donate-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    min-height: 47px;
+    padding: 12px 24px;
+
+    border-radius: 12px;
+
+    color: #ffffff !important;
+
+    background:
+        linear-gradient(
+            90deg,
+            #9f8de0,
+            #8367db
+        );
+
+    box-shadow:
+        0 10px 20px rgba(115, 89, 201, 0.25);
+
+    font-size: 14px;
+    font-weight: 750;
+    text-decoration: none !important;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.donate-button:hover {
+    box-shadow:
+        0 14px 25px rgba(115, 89, 201, 0.36);
+
+    transform: translateY(-2px);
+}
+
+.donate-button i {
+    transition: transform 0.25s ease;
+}
+
+.donate-button:hover i {
+    transform: translateX(4px);
+}
+
+/* Empty */
+
+.donate-empty {
+    grid-column: 1 / -1;
+
+    padding: 48px 25px;
+
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 18px;
+
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.14);
+
+    backdrop-filter: blur(8px);
+}
+
+.donate-empty i {
+    margin-bottom: 15px;
+
+    font-size: 44px;
+}
+
+.donate-empty h2 {
+    margin-bottom: 8px;
+
+    font-size: 22px;
+}
+
+.donate-empty p {
+    font-size: 14px;
+}
+
+/* Responsive */
+
+@media (max-width: 1100px) {
+    .donate-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .donate-page {
+        padding: 45px 20px 65px;
     }
 
-}
-
-@media(max-width:768px){
-
-    .listing{
-        padding:40px 20px;
+    .donate-page-header h1 {
+        font-size: 30px;
     }
 
-    .cards{
-        grid-template-columns:1fr;
+    .donate-filter-row {
+        justify-content: center;
     }
 
-    .card-img{
-        height:220px;
+    .donate-cards {
+        grid-template-columns: 1fr;
     }
 
-    .card-body h3{
-        font-size:24px;
+    .donate-card-image {
+        height: 225px;
     }
-
-    .tag-category{
-        font-size:18px;
-    }
-
-}
-.filter-row{
-    display:flex;
-    justify-content:flex-end;
-    max-width:1200px;
-    margin:0 auto 35px;
 }
 
-.filter-dropdown{
-    position:relative;
-}
-
-.filter-btn{
-
-    display:flex;
-    align-items:center;
-    gap:10px;
-
-    padding:14px 22px;
-
-    border:none;
-    outline:none;
-
-    border-radius:50px;
-
-    background:linear-gradient(135deg,#f58fb4,#8d7be6);
-
-    color:#fff;
-
-    font-size:15px;
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.3s;
-
-    box-shadow:0 12px 25px rgba(143,90,205,.30);
-}
-
-.filter-btn:hover{
-
-    transform:translateY(-2px);
-
-    box-shadow:0 18px 35px rgba(143,90,205,.45);
-
-}
-
-.filter-btn i:last-child{
-
-    transition:.3s;
-
-}
-
-.filter-dropdown:hover .filter-btn i:last-child{
-
-    transform:rotate(180deg);
-
-}
-
-.filter-menu{
-
-    position:absolute;
-
-    right:0;
-    top:115%;
-
-    width:270px;
-
-    background:rgba(255,255,255,.96);
-
-    backdrop-filter:blur(14px);
-
-    border-radius:18px;
-
-    overflow:hidden;
-
-    box-shadow:0 20px 45px rgba(0,0,0,.18);
-
-    opacity:0;
-    visibility:hidden;
-
-    transform:translateY(15px);
-
-    transition:.25s;
-
-    z-index:999;
-
-}
-
-.filter-dropdown:hover .filter-menu{
-
-    opacity:1;
-
-    visibility:visible;
-
-    transform:translateY(0);
-
-}
-
-.filter-menu a{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
-
-    padding:16px 20px;
-
-    text-decoration:none;
-
-    color:#555;
-
-    font-size:15px;
-
-    transition:.25s;
-
-}
-
-.filter-menu a:not(:last-child){
-
-    border-bottom:1px solid #f2f2f2;
-
-}
-
-.filter-menu a:hover{
-
-    background:#f7f4ff;
-
-    color:#8b67df;
-
-    padding-left:28px;
-
-}
-
-.filter-menu a.active{
-
-    background:linear-gradient(90deg,#f58fb4,#8b6bdf);
-
-    color:#fff;
-
-    font-weight:700;
-
-}
-
-.filter-menu a.active:hover{
-
-    padding-left:20px;
-
-}
 <?= $this->endSection() ?>
+
 
 <?= $this->section('content') ?>
 
-<section class="listing">
-    <h1>Program Donasi <span>Terbaru</span></h1>
-    <p class="subtitle">Mari bersama wujudkan kebaikan untuk yang membutuhkan</p>
+<?php
 
-    <div class="filter-row">
-       <div class="filter-dropdown">
+$programs = $programs ?? [];
 
-        <button class="filter-btn">
-            <i class="fa-solid fa-filter"></i>
-            Filter Program
-            <i class="fa-solid fa-chevron-down"></i>
-        </button>
+$selectedCategory = trim(
+    (string) ($selectedCategory ?? '')
+);
 
-        <div class="filter-menu">
+$databaseError = $databaseError ?? null;
 
-            <a href="<?= site_url('donate') ?>"
-               class="<?= empty($selectedCategory) ? 'active' : '' ?>">
-                🌍 Semua Program
-            </a>
+?>
 
-            <a href="<?= site_url('donate?category=Medis') ?>"
-               class="<?= ($selectedCategory=='Medis')?'active':'' ?>">
-                🏥 Donasi Kesehatan
-            </a>
+<section class="donate-page">
 
-            <a href="<?= site_url('donate?category=Pendidikan') ?>"
-               class="<?= ($selectedCategory=='Pendidikan')?'active':'' ?>">
-                📚 Donasi Pendidikan
-            </a>
+    <div class="donate-page-header">
+        <h1>
+            Program Donasi <span>Terbaru</span>
+        </h1>
 
-            <a href="<?= site_url('donate?category=Bencana') ?>"
-               class="<?= ($selectedCategory=='Bencana')?'active':'' ?>">
-                🌊 Bencana Alam
-            </a>
+        <p>
+            Mari bersama wujudkan kebaikan untuk yang membutuhkan.
+        </p>
+    </div>
 
-            <a href="<?= site_url('donate?category=Panti Asuhan') ?>"
-               class="<?= ($selectedCategory=='Panti Asuhan')?'active':'' ?>">
-                🏡 Panti Asuhan
-            </a>
+    <div class="donate-filter-row">
+
+        <div class="donate-filter">
+
+            <button
+                type="button"
+                class="donate-filter-button"
+            >
+                <i class="fa-solid fa-filter"></i>
+
+                Filter Program
+
+                <i
+                    class="fa-solid fa-chevron-down donate-filter-arrow"
+                ></i>
+            </button>
+
+            <div class="donate-filter-menu">
+
+                <a
+                    href="<?= site_url('donate') ?>"
+                    class="<?= $selectedCategory === '' ? 'active' : '' ?>"
+                >
+                    🌍 Semua Program
+                </a>
+
+                <a
+                    href="<?= site_url('donate') ?>?category=Medis"
+                    class="<?= strcasecmp(
+                        $selectedCategory,
+                        'Medis'
+                    ) === 0 ? 'active' : '' ?>"
+                >
+                    🏥 Donasi Kesehatan
+                </a>
+
+                <a
+                    href="<?= site_url('donate') ?>?category=Pendidikan"
+                    class="<?= strcasecmp(
+                        $selectedCategory,
+                        'Pendidikan'
+                    ) === 0 ? 'active' : '' ?>"
+                >
+                    📚 Donasi Pendidikan
+                </a>
+
+                <a
+                    href="<?= site_url('donate') ?>?category=Bencana"
+                    class="<?= strcasecmp(
+                        $selectedCategory,
+                        'Bencana'
+                    ) === 0 ? 'active' : '' ?>"
+                >
+                    🌊 Bencana Alam
+                </a>
+
+                <a
+                    href="<?= site_url('donate') ?>?category=Panti%20Asuhan"
+                    class="<?= strcasecmp(
+                        $selectedCategory,
+                        'Panti Asuhan'
+                    ) === 0 ? 'active' : '' ?>"
+                >
+                    🏡 Panti Asuhan
+                </a>
+
+            </div>
 
         </div>
 
     </div>
 
-    </div>
+    <?php if (! empty($databaseError)): ?>
 
-    <div class="cards">
-      <?php if (empty($programs)): ?>
-        <p style="color:#fff;">Belum ada program donasi aktif saat ini.</p>
-      <?php endif; ?>
+        <div class="donate-database-error">
+            <strong>Kesalahan database:</strong>
 
-      <?php foreach ($programs as $program): ?>
-        <div class="card">
-          <div class="card-img">
-            <img src="<?= base_url('uploads/programs/' . $program['image']) ?>"
-         alt="<?= esc($program['title']) ?>">
-            <div class="progress-pill">
-                <strong>
-            Rp<?= number_format($program['collected_amount'],0,',','.') ?>
-        </strong>
-        terkumpul dari
-        <strong>
-            Rp<?= number_format($program['target_amount'],0,',','.') ?>
-        </strong>
-            </div>
-                <div class="progress-percent">
-        <?= $program['progress'] ?>%
-    </div>
-          </div>
-          <div class="card-body">
-            <h3><?= esc($program['title']) ?></h3>
-            <span class="tag-category"><?= esc($program['category']) ?></span>
-            <p class="desc"><?= esc($program['description']) ?></p>
-            <div class="meta-row">
-              <span>👥 <?= (int) $program['donor_count'] ?> Donatur</span>
-              <span>🗓 <?= (int) $program['days_left'] ?> Hari lagi</span>
-            </div>
-            <a href="<?= site_url('donate/checkout/' . $program['id']) ?>" class="btn-donasi">Donasi Sekarang →</a>
-          </div>
+            <?= esc($databaseError) ?>
         </div>
-      <?php endforeach; ?>
+
+    <?php endif; ?>
+
+    <div class="donate-cards">
+
+        <?php if (empty($programs)): ?>
+
+            <div class="donate-empty">
+
+                <i class="fa-solid fa-hand-holding-heart"></i>
+
+                <h2>Program belum tersedia</h2>
+
+                <p>
+                    Belum ada program donasi yang sesuai dengan
+                    kategori yang dipilih.
+                </p>
+
+            </div>
+
+        <?php else: ?>
+
+            <?php foreach ($programs as $program): ?>
+
+                <article class="donate-card">
+
+                    <div class="donate-card-image">
+
+                        <?php if (! empty($program['picture_url'])): ?>
+
+                            <img
+                                src="<?= esc(
+                                    $program['picture_url'],
+                                    'attr'
+                                ) ?>"
+                                alt="<?= esc(
+                                    $program['title'],
+                                    'attr'
+                                ) ?>"
+                                loading="lazy"
+                            >
+
+                        <?php else: ?>
+
+                            <div class="donate-image-empty">
+                                <i class="fa-solid fa-image"></i>
+
+                                <span>
+                                    Gambar belum tersedia
+                                </span>
+                            </div>
+
+                        <?php endif; ?>
+
+                        <span class="donate-status">
+                            <?= esc($program['status']) ?>
+                        </span>
+
+                        <div class="donate-progress-info">
+
+                            <strong>
+                                Rp<?= number_format(
+                                    (int) $program['current_amount'],
+                                    0,
+                                    ',',
+                                    '.'
+                                ) ?>
+                            </strong>
+
+                            terkumpul dari
+
+                            <strong>
+                                Rp<?= number_format(
+                                    (int) $program['target_amount'],
+                                    0,
+                                    ',',
+                                    '.'
+                                ) ?>
+                            </strong>
+
+                        </div>
+
+                        <div class="donate-progress-percent">
+                            <?= (int) $program['progress'] ?>%
+                        </div>
+
+                    </div>
+
+                    <div class="donate-card-content">
+
+                        <div class="donate-foundation">
+                            <i class="fa-solid fa-building-columns"></i>
+
+                            <?= esc($program['foundation_name']) ?>
+                        </div>
+
+                        <h2 class="donate-card-title">
+                            <?= esc($program['title']) ?>
+                        </h2>
+
+                        <span class="donate-category">
+                            <?= esc($program['category']) ?>
+                        </span>
+
+                        <p class="donate-description">
+                            <?= esc($program['description']) ?>
+                        </p>
+
+                        <div class="donate-location">
+                            <i class="fa-solid fa-location-dot"></i>
+
+                            <?= esc(
+                                $program['foundation_location']
+                            ) ?>
+                        </div>
+
+                        <div class="donate-meta">
+
+                            <span>
+                                <i class="fa-solid fa-users"></i>
+
+                                <?= (int) $program['donor_count'] ?>
+                                Donatur
+                            </span>
+
+                            <span>
+                                <i class="fa-regular fa-calendar"></i>
+
+                                <?= esc(
+                                    $program['deadline_label']
+                                ) ?>
+                            </span>
+
+                        </div>
+
+                        <a
+                            href="<?= site_url(
+                                'donate/checkout/'
+                                . (int) $program['id']
+                            ) ?>"
+                            class="donate-button"
+                        >
+                            Donasi Sekarang
+
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+
+                    </div>
+
+                </article>
+
+            <?php endforeach; ?>
+
+        <?php endif; ?>
+
     </div>
+
 </section>
 
 <?= $this->endSection() ?>

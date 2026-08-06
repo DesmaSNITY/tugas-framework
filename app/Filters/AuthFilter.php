@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filters;
 
 use CodeIgniter\Filters\FilterInterface;
@@ -8,17 +10,37 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class AuthFilter implements FilterInterface
 {
-    public function before(RequestInterface $request, $arguments = null)
-    {
-        // Jika menggunakan CodeIgniter Shield
-        if (! auth()->loggedIn()) {
-            return redirect()->to('/login')
-                ->with('error', 'Silakan login terlebih dahulu.');
+    /**
+     * Memeriksa session sebelum controller dijalankan.
+     */
+    public function before(
+        RequestInterface $request,
+        $arguments = null
+    ) {
+        $isLoggedIn =
+            session()->get('is_logged_in') === true
+            && (int) session()->get('user_id') > 0;
+
+        if (! $isLoggedIn) {
+            return redirect()
+                ->to(site_url('login'))
+                ->with(
+                    'error',
+                    'Silakan login terlebih dahulu.'
+                );
         }
+
+        return null;
     }
 
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
-    {
-        // Tidak ada proses setelah request
+    /**
+     * Tidak ada proses setelah response.
+     */
+    public function after(
+        RequestInterface $request,
+        ResponseInterface $response,
+        $arguments = null
+    ) {
+        return null;
     }
 }

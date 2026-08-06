@@ -61,7 +61,20 @@
           </li>
           <!--end::Color Mode Toggle-->
 
-          <?php $currentUser = auth()->user(); ?>
+          <?php
+$user = current_user();
+?>
+<header>
+    <?php if ($user !== null): ?>
+        <span><?= esc($user['username'] ?? 'Pengguna') ?></span>
+        <form action="<?= site_url('logout') ?>" method="post" style="display:inline">
+            <?= csrf_field() ?>
+            <button type="submit">Logout</button>
+        </form>
+    <?php else: ?>
+        <a href="<?= site_url('login') ?>">Login</a>
+    <?php endif; ?>
+</header>
 
           <!--begin::User Menu Dropdown-->
           <li class="nav-item dropdown user-menu">

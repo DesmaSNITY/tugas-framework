@@ -1,186 +1,126 @@
 <?php
 
-namespace App\Controllers\Admin;
+declare(strict_types=1);
+
+namespace App\Controllers\admin;
 
 use App\Controllers\BaseController;
 use App\Models\UserModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
+use CodeIgniter\HTTP\RedirectResponse;
 
 class UsersController extends BaseController
 {
-    protected UserModel $model;
+    protected UserModel $userModel;
 
     public function __construct()
     {
-        $this->model = new UserModel();
+        $this->userModel = new UserModel();
     }
 
-    public function index()
+    public function index(): string
     {
-        return view('admin/userslist.php');
-    }
-
-    public function data()
-    {
-        // still excluding email/phone from the list view, per your earlier decision
-        $users = $this->model
-            ->select('id, username, first_name, last_name, status_message, active, last_active, created_at')
-            ->findAll();
-
-        return $this->response->setJSON($users);
-    }
-
-    public function create()
-    {
-        return view('admin/addadmin.php');
-    }
-
-public function store()
-{
-    $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
-
-    if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
-        return $this->response->setStatusCode(422)->setJSON(['error' => 'Missing required fields']);
-    }
-
-    // 1. Create and save the user WITHOUT the identity first
-    $user = new \CodeIgniter\Shield\Entities\User([
-        'username'   => $data['username'],
-        'active'     => $data['active'] ?? 1,
-        'first_name' => $data['first_name'] ?? null,
-        'last_name'  => $data['last_name'] ?? null,
-        'phone'      => $data['phone'] ?? null,
-    ]);
-
-    $this->model->save($user);
-
-    // 2. Re-fetch — this one has a real id
-    $newUser = $this->model->find($this->model->getInsertID());
-
-    // 3. NOW create the email identity — id exists at this point
-    $newUser->createEmailIdentity([
-        'email'    => $data['email'],
-        'password' => $data['password'],
-    ]);
-
-    // 4. Assign role/group if provided
-    if (! empty($data['role'])) {
-        $newUser->syncGroups($data['role']);
-    }
-
-    return $this->response->setJSON(['id' => $newUser->id]);
-}
-
-    public function view($id)
-    {
-        $user = $this->model->find($id);
-        if (! $user) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        }
-
-        // email/role still need the join, since those live in separate Shield tables
-        $email = $this->getEmailForUser($id);
-        $role  = $this->getRoleForUser($id);
-
-        return view('admin/userdetails', [
-            'user'  => $user,
-            'email' => $email,
-            'role'  => $role,
+        return view('admin/users/index', [
+            'title' => 'Data Pengguna',
+            'users' => $this->userModel->orderBy('id', 'DESC')->findAll(),
         ]);
     }
 
-    public function edit($id)
+    public function store(): RedirectResponse
     {
-        $user = $this->model->find($id);
-        if (! $user) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        }
-    
-        $email = $this->getEmailForUser($id);
-        $role  = $this->getRoleForUser($id);
-    
-        return view('admin/edituser', [
-            'user'  => $user->toArray(),
-            'email' => $email,
-            'role'  => $role,
-        ]);
-    }
+        $data = $this->validatedData();
 
-    public function viewData($id)
-    {
-        $user = $this->model->find($id);
-        if (! $user) {
-            return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
+        if ($data instanceof RedirectResponse) {
+            return $data;
         }
 
-        $data = $user->toArray();
-        $data['email'] = $this->getEmailForUser($id);
-        $data['role']  = $this->getRoleForUser($id);
+        $password = (string) $this->request->getPost('password');
+        $data['password_hash'] = password_hash($password, PASSWORD_DEFAULT);
+        $data['active'] = 1;
 
-        return $this->response->setJSON($data);
-    }
-
-    public function update($id)
-    {
-        $data = $this->request->is('json') ? $this->request->getJSON(true) : $this->request->getPost();
-
-        $user = $this->model->find($id);
-        if (! $user) {
-            return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
+        if (! $this->userModel->insert($data)) {
+            return redirect()->back()->withInput()->with('errors', $this->userModel->errors());
         }
 
-        $user->fill([
-            'first_name' => $data['first_name'] ?? null,
-            'last_name'  => $data['last_name'] ?? null,
-            'phone'      => $data['phone'] ?? null,
-            'active'     => isset($data['active']) ? (int) $data['active'] : $user->active,
-        ]);
+        return redirect()->back()->with('success', 'Pengguna berhasil ditambahkan.');
+    }
 
-        // Only touch password if a new one was actually submitted
-        if (! empty($data['new_password'])) {
-            $user->password = $data['new_password'];
+    public function update(int $id): RedirectResponse
+    {
+        $user = $this->userModel->find($id);
+
+        if (! is_array($user)) {
+            throw PageNotFoundException::forPageNotFound('Pengguna tidak ditemukan.');
         }
 
-        $this->model->save($user); // saves profile fields AND password identity (if set) in one call
+        $data = $this->validatedData($id, false);
 
-        if (! empty($data['role'])) {
-            $user->syncGroups($data['role']);
+        if ($data instanceof RedirectResponse) {
+            return $data;
         }
 
-        return $this->response->setJSON($this->model->find($id));
-    }
+        $password = (string) $this->request->getPost('password');
 
-    public function delete($id)
-    {
-        $user = $this->model->find($id);
-        if (! $user) {
-            return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
+        if ($password !== '') {
+            $data['password_hash'] = password_hash($password, PASSWORD_DEFAULT);
         }
 
-        $this->model->delete($id); // soft delete, assuming Shield's default is preserved
-        return $this->response->setJSON(['deleted' => true]);
+        if (! $this->userModel->update($id, $data)) {
+            return redirect()->back()->withInput()->with('errors', $this->userModel->errors());
+        }
+
+        return redirect()->back()->with('success', 'Pengguna berhasil diperbarui.');
     }
 
-    private function getEmailForUser($id)
+    public function delete(int $id): RedirectResponse
     {
-        return $this->db()->table('auth_identities')
-            ->select('secret as email')
-            ->where('user_id', $id)
-            ->where('type', 'email_password')
-            ->get()
-            ->getRowArray()['email'] ?? null;
+        $current = current_user();
+
+        if ($current !== null && (int) $current['id'] === $id) {
+            return redirect()->back()->with('error', 'Akun yang sedang digunakan tidak dapat dihapus.');
+        }
+
+        $this->userModel->delete($id);
+
+        return redirect()->back()->with('success', 'Pengguna berhasil dihapus.');
     }
 
-    private function getRoleForUser($id)
+    private function validatedData(?int $ignoreId = null, bool $passwordRequired = true): array|RedirectResponse
     {
-        return $this->db()->table('auth_groups_users')
-            ->select('group')
-            ->where('user_id', $id)
-            ->get()
-            ->getRowArray()['group'] ?? null;
-    }
+        $rules = [
+            'username'   => 'required|min_length[3]|max_length[30]|regex_match[/^[a-zA-Z0-9._-]+$/]',
+            'email'      => 'required|valid_email|max_length[100]',
+            'first_name' => 'required|max_length[100]',
+            'last_name'  => 'permit_empty|max_length[100]',
+            'phone'      => 'permit_empty|max_length[20]',
+            'role'       => 'required|in_list[user,admin]',
+            'active'     => 'required|in_list[0,1]',
+            'password'   => ($passwordRequired ? 'required|' : 'permit_empty|') . 'min_length[8]|max_length[255]',
+        ];
 
-    private function db()
-    {
-        return \Config\Database::connect();
+        if (! $this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $username = strtolower(trim((string) $this->request->getPost('username')));
+        $email    = strtolower(trim((string) $this->request->getPost('email')));
+
+        if ($this->userModel->usernameExists($username, $ignoreId)) {
+            return redirect()->back()->withInput()->with('error', 'Username sudah digunakan.');
+        }
+
+        if ($this->userModel->emailExists($email, $ignoreId)) {
+            return redirect()->back()->withInput()->with('error', 'Email sudah digunakan.');
+        }
+
+        return [
+            'username'   => $username,
+            'email'      => $email,
+            'first_name' => trim((string) $this->request->getPost('first_name')),
+            'last_name'  => trim((string) $this->request->getPost('last_name')) ?: null,
+            'phone'      => trim((string) $this->request->getPost('phone')) ?: null,
+            'role'       => (string) $this->request->getPost('role'),
+            'active'     => (int) $this->request->getPost('active'),
+        ];
     }
 }
